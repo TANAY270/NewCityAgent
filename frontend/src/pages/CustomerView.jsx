@@ -1066,6 +1066,9 @@ export default function CustomerView({ isEmbedded = false }) {
         <div style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid #888', cursor: 'pointer' }} onClick={() => { setShowPrivacy(false); setIsSaathiOpen(false); }} title="Home" />
         <div style={{ width: '14px', height: '14px', border: '2px solid #888', borderRadius: '2px', cursor: 'pointer' }} />
       </div>
+      </div>
+
+
     </div>
   );
 

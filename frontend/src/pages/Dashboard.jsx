@@ -3,6 +3,8 @@ import { triggerScenario, resetState, getState } from '../services/api';
 import { RefreshCw, Zap, Send, Activity, Shield, Coins, CheckCircle, HelpCircle } from 'lucide-react';
 import MapSimulator from '../components/MapSimulator';
 
+
+
 export default function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [signalForm, setSignalForm] = useState({ phone: '9876543210', source: 'ATM', city: 'Bengaluru' });
