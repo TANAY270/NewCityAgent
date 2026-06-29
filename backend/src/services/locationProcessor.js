@@ -17,6 +17,20 @@ export const locationProcessor = {
       throw new Error(`User not found with phone number: ${phone}`);
     }
 
+    // Check user consent
+    if (user.consent && user.consent[source] === false) {
+      inMemoryDb.logEvent('SIGNAL_BLOCKED', `Signal [${source}] for ${user.name} blocked due to privacy settings`, {
+        user: user.name,
+        source,
+        city
+      });
+      return {
+        signalProcessed: false,
+        consentBlocked: true,
+        message: `Signal blocked: Customer has opted out of ${source} alerts.`
+      };
+    }
+
     // 2. Log the signal
     const signal = inMemoryDb.addSignal({
       userId: user.id,

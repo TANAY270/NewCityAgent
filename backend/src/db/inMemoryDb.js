@@ -10,7 +10,8 @@ const initialUsers = [
     segment: 'worker',
     preferredLanguage: 'Hindi',
     accountStatus: 'dormant',
-    balance: 2450.00
+    balance: 2450.00,
+    consent: { UPI: true, ATM: true, SIM: true }
   },
   {
     id: 'user_priya',
@@ -22,7 +23,8 @@ const initialUsers = [
     segment: 'student',
     preferredLanguage: 'English',
     accountStatus: 'none',
-    balance: 0.00
+    balance: 0.00,
+    consent: { UPI: true, ATM: true, SIM: true }
   },
   {
     id: 'user_anil',
@@ -34,7 +36,8 @@ const initialUsers = [
     segment: 'worker',
     preferredLanguage: 'Kannada',
     accountStatus: 'active',
-    balance: 12500.00
+    balance: 12500.00,
+    consent: { UPI: true, ATM: true, SIM: true }
   }
 ];
 

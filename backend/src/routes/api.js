@@ -191,4 +191,26 @@ router.post('/demo/trigger-scenario', asyncHandler(async (req, res) => {
   return res.status(400).json({ error: 'Invalid scenario name. Supported: migrant_worker, student' });
 }));
 
+/**
+ * Update user consent settings
+ */
+router.post('/accounts/consent', asyncHandler(async (req, res) => {
+  const { phone, consent } = req.body;
+  if (!phone || !consent) {
+    return res.status(400).json({ error: 'phone and consent are required.' });
+  }
+  const user = inMemoryDb.getUserByPhone(phone);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found.' });
+  }
+  const updatedUser = inMemoryDb.updateUser(user.id, { consent });
+  
+  inMemoryDb.logEvent('PRIVACY_UPDATE', `Consent updated for ${user.name}: UPI=${consent.UPI}, ATM=${consent.ATM}, SIM=${consent.SIM}`, {
+    user: user.name,
+    consent
+  });
+  
+  res.status(200).json({ success: true, user: updatedUser });
+}));
+
 export default router;
