@@ -2,6 +2,7 @@ import express from 'express';
 import { inMemoryDb } from '../db/inMemoryDb.js';
 import { locationProcessor } from '../services/locationProcessor.js';
 import { cbsService } from '../services/cbsService.js';
+import { saathiService } from '../services/saathiService.js';
 
 const router = express.Router();
 
@@ -211,6 +212,24 @@ router.post('/accounts/consent', asyncHandler(async (req, res) => {
   });
   
   res.status(200).json({ success: true, user: updatedUser });
+}));
+
+/**
+ * Chat with SBI Saathi helper agent
+ */
+router.post('/saathi/chat', asyncHandler(async (req, res) => {
+  const { phone, message } = req.body;
+  if (!phone || !message) {
+    return res.status(400).json({ error: 'phone and message are required.' });
+  }
+
+  const user = inMemoryDb.getUserByPhone(phone);
+  if (!user) {
+    return res.status(404).json({ error: 'User not found.' });
+  }
+
+  const response = await saathiService.chat(user, message);
+  res.status(200).json({ response });
 }));
 
 export default router;

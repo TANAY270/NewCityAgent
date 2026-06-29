@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { triggerScenario, resetState, getState } from '../services/api';
-import { RefreshCw, Zap, Send, Activity, Shield, Coins, CheckCircle } from 'lucide-react';
+import { RefreshCw, Zap, Send, Activity, Shield, Coins, CheckCircle, HelpCircle } from 'lucide-react';
+import MapSimulator from '../components/MapSimulator';
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(false);
@@ -93,6 +94,44 @@ export default function Dashboard() {
     setSignalForm({ phone, source: defaultSource, city: defaultCity });
   };
 
+  const [helpSection, setHelpSection] = useState(null);
+
+  const handleMapCityClick = (cityName) => {
+    const activePhone = signalForm.phone || '9876543210';
+    let source = 'UPI';
+    if (activePhone === '9876543210') source = 'ATM';
+    else if (activePhone === '9876543211') source = 'SIM';
+    
+    setSignalForm({
+      phone: activePhone,
+      source: source,
+      city: cityName
+    });
+  };
+
+  const helpDetails = {
+    studio: {
+      title: 'Scenario Studio - Relocation Detection',
+      tech: 'Location Signal Processing Engine',
+      desc: 'How location signals trigger customer outreach: The agent listens to event streams from UPI merchant payments, ATM logs, or SIM cell-tower handovers. If a transaction location differs from the customer\'s home branch state registry, it indicates a critical city change transition. Rather than continuous GPS tracking, the system relies on these transactional milestones to respect user privacy.'
+    },
+    ingress: {
+      title: 'Custom Signal Ingress',
+      tech: 'API Signal Gateway Switch',
+      desc: 'Simulating integration with telecom and payment gateways: This panel simulates receiving transactional webhooks. For instance, when a customer taps their card at an ATM or initiates a local merchant UPI QR scan, the payment switch notifies NewCityAgent. The gateway instantly checks current consent policies before routing signals to the AI processing layer.'
+    },
+    analytics: {
+      title: 'Platform Analytics',
+      tech: 'Banking Performance Metrics',
+      desc: 'Measuring business and compliance indicators: Displays key performance metrics. Onboarding Conversions show the share of identified relocated customers who successfully reactivated their accounts or opened new ones. Active Remittances shows the volume of funds safely processed through automated, recurring local accounts instead of informal cash channels.'
+    },
+    terminal: {
+      title: 'Live System Event Stream',
+      tech: 'Agent Audit Trace Ledger',
+      desc: 'Audit logs and agent trace visibility: Tracks the exact processing path of the AI agent. Displays when a signal is received, when database lookups are performed, when the LLM generates customized outreach, and when messages are dispatched to the customer\'s app, giving compliance auditors clear traceability.'
+    }
+  };
+
   // Compute metrics
   const activeCount = users.filter(u => u.accountStatus === 'active').length;
   const remittanceTotal = remittances.reduce((sum, r) => sum + Number(r.amount), 0);
@@ -119,16 +158,25 @@ export default function Dashboard() {
             border: '1px solid var(--card-border)',
             boxShadow: 'var(--card-shadow)'
           }}>
-            <h3 style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Zap size={18} color="var(--primary-purple)" />
-              Scenario Studio
+            <h3 style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Zap size={18} color="var(--primary-purple)" />
+                Scenario Studio
+              </span>
+              <button 
+                onClick={() => setHelpSection('studio')}
+                style={{ background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                title="Learn about this technology"
+              >
+                <HelpCircle size={16} />
+              </button>
             </h3>
             
             <div style={{ display: 'flex', gap: '20px', marginBottom: '25px' }}>
               <div style={{ flex: 1, padding: '15px', border: '1px solid var(--card-border)', borderRadius: '6px', background: 'var(--bg-primary)' }}>
                 <strong style={{ fontSize: '0.85rem' }}>Migrant Worker</strong>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '6px 0 12px 0', lineHeight: '1.4' }}>
-                  Simulates Ramesh moving Patna ➡️ Bengaluru. Triggers ATM geolocation. Reactivates dormant account.
+                  Simulates Ramesh moving Patna to Bengaluru. Triggers ATM geolocation. Reactivates dormant account.
                 </p>
                 <button 
                   onClick={() => handleTrigger('migrant_worker')}
@@ -151,7 +199,7 @@ export default function Dashboard() {
               <div style={{ flex: 1, padding: '15px', border: '1px solid var(--card-border)', borderRadius: '6px', background: 'var(--bg-primary)' }}>
                 <strong style={{ fontSize: '0.85rem' }}>Student Onboarding</strong>
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '6px 0 12px 0', lineHeight: '1.4' }}>
-                  Simulates Priya moving Ranchi ➡️ Pune. Triggers SIM network roaming. Opens new student account.
+                  Simulates Priya moving Ranchi to Pune. Triggers SIM network roaming. Opens new student account.
                 </p>
                 <button 
                   onClick={() => handleTrigger('student')}
@@ -203,9 +251,18 @@ export default function Dashboard() {
             border: '1px solid var(--card-border)',
             boxShadow: 'var(--card-shadow)'
           }}>
-            <h3 style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Send size={18} color="var(--primary-purple)" />
-              Custom Signal Injection
+            <h3 style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Send size={18} color="var(--primary-purple)" />
+                Custom Signal Injection
+              </span>
+              <button 
+                onClick={() => setHelpSection('ingress')}
+                style={{ background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                title="Learn about this technology"
+              >
+                <HelpCircle size={16} />
+              </button>
             </h3>
             
             <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
@@ -312,63 +369,201 @@ export default function Dashboard() {
                 border: '1px solid #333'
               }}>
                 {signalResponse.consentBlocked ? (
-                  <div>❌ Permission Denied: Signal blocked by Privacy Ledger settings.</div>
+                  <div>Permission Denied: Signal blocked by Privacy Ledger settings.</div>
                 ) : signalResponse.cityChangeDetected ? (
-                  <div>⚠️ Relocation Detected: Welcome Notification dispatched to YONO App.</div>
+                  <div>Relocation Detected: Welcome Notification dispatched to YONO App.</div>
                 ) : (
-                  <div>✅ Signal ingested successfully (No city change detected).</div>
+                  <div>Signal ingested successfully (No city change detected).</div>
                 )}
               </div>
             )}
           </div>
         </div>
 
-        {/* Right Column: Platform Analytics */}
+        {/* Right Column: Map Simulator and Platform Analytics */}
         <div style={{ flex: 0.8, display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <h3 style={{ color: 'var(--text-primary)', fontSize: '1.1rem', margin: '5px 0' }}>Platform Analytics</h3>
           
-          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', borderRadius: '8px', padding: '20px', boxShadow: 'var(--card-shadow)', display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <div style={{ background: '#22c55e20', padding: '12px', borderRadius: '50%', color: '#22c55e' }}>
-              <CheckCircle size={22} />
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Active Users</div>
-              <strong style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>{activeCount} / {users.length}</strong>
-            </div>
-          </div>
+          <MapSimulator users={users} onCityClick={handleMapCityClick} />
 
-          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', borderRadius: '8px', padding: '20px', boxShadow: 'var(--card-shadow)', display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <div style={{ background: '#b0185e20', padding: '12px', borderRadius: '50%', color: '#b0185e' }}>
-              <Coins size={22} />
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Active Remittances</div>
-              <strong style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>₹{remittanceTotal.toLocaleString()}</strong>
-            </div>
-          </div>
+          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', borderRadius: '8px', padding: '25px', boxShadow: 'var(--card-shadow)' }}>
+            <h3 style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Activity size={18} color="var(--primary-purple)" />
+                Platform Analytics
+              </span>
+              <button 
+                onClick={() => setHelpSection('analytics')}
+                style={{ background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                title="Learn about this technology"
+              >
+                <HelpCircle size={16} />
+              </button>
+            </h3>
 
-          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', borderRadius: '8px', padding: '20px', boxShadow: 'var(--card-shadow)', display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <div style={{ background: '#ef444420', padding: '12px', borderRadius: '50%', color: '#ef4444' }}>
-              <Shield size={22} />
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Privacy Intercepts</div>
-              <strong style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>{privacyBlocks}</strong>
-            </div>
-          </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ background: '#22c55e20', padding: '12px', borderRadius: '50%', color: '#22c55e' }}>
+                  <CheckCircle size={22} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Active Users</div>
+                  <strong style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>{activeCount} / {users.length}</strong>
+                </div>
+              </div>
 
-          <div style={{ background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', borderRadius: '8px', padding: '20px', boxShadow: 'var(--card-shadow)', display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <div style={{ background: '#00a2e020', padding: '12px', borderRadius: '50%', color: '#00a2e0' }}>
-              <Activity size={22} />
-            </div>
-            <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Onboarding Conversions</div>
-              <strong style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>{conversionRate}%</strong>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ background: '#b0185e20', padding: '12px', borderRadius: '50%', color: '#b0185e' }}>
+                  <Coins size={22} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Active Remittances</div>
+                  <strong style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>₹{remittanceTotal.toLocaleString()}</strong>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ background: '#ef444420', padding: '12px', borderRadius: '50%', color: '#ef4444' }}>
+                  <Shield size={22} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Privacy Intercepts</div>
+                  <strong style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>{privacyBlocks}</strong>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ background: '#00a2e020', padding: '12px', borderRadius: '50%', color: '#00a2e0' }}>
+                  <Activity size={22} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Onboarding Conversions</div>
+                  <strong style={{ fontSize: '1.4rem', color: 'var(--text-primary)' }}>{conversionRate}%</strong>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
       </div>
+
+      {/* Bottom Row: Live System Event Stream Terminal */}
+      <div style={{ marginTop: '40px', background: 'var(--bg-secondary)', border: '1px solid var(--card-border)', borderRadius: '8px', padding: '25px', boxShadow: 'var(--card-shadow)' }}>
+        <h3 style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Activity size={18} color="var(--primary-purple)" />
+            Live System Event Stream
+          </span>
+          <button 
+            onClick={() => setHelpSection('terminal')}
+            style={{ background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+            title="Learn about this technology"
+          >
+            <HelpCircle size={16} />
+          </button>
+        </h3>
+
+        <div style={{
+          fontFamily: 'monospace',
+          fontSize: '0.8rem',
+          background: '#0c0d12',
+          color: '#38bdf8',
+          padding: '15px',
+          borderRadius: '8px',
+          border: '1px solid #1e293b',
+          height: '220px',
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px'
+        }}>
+          {events.length === 0 ? (
+            <div style={{ color: '#64748b', textAlign: 'center', marginTop: '80px' }}>No system events logged yet. Trigger a relocation to view execution path.</div>
+          ) : (
+            [...events].reverse().map((evt) => {
+              const timeStr = new Date(evt.timestamp).toLocaleTimeString();
+              let badgeColor = '#94a3b8';
+              if (evt.type.includes('START') || evt.type.includes('SUCCESS') || evt.type.includes('TRANSACTION')) {
+                badgeColor = '#34d399';
+              } else if (evt.type.includes('ERROR') || evt.type.includes('BLOCKED') || evt.type.includes('WARNING')) {
+                badgeColor = '#f87171';
+              } else if (evt.type.includes('SIGNAL') || evt.type.includes('CITY')) {
+                badgeColor = '#fb7185';
+              } else if (evt.type.includes('LLM') || evt.type.includes('NOTIFICATION')) {
+                badgeColor = '#c084fc';
+              }
+
+              return (
+                <div key={evt.id} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', borderBottom: '1px solid #1e293b', paddingBottom: '6px' }}>
+                  <span style={{ color: '#64748b', flexShrink: 0 }}>[{timeStr}]</span>
+                  <span style={{
+                    background: `${badgeColor}20`,
+                    color: badgeColor,
+                    padding: '1px 6px',
+                    borderRadius: '3px',
+                    fontSize: '0.7rem',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {evt.type}
+                  </span>
+                  <span style={{ color: '#e2e8f0' }}>{evt.message}</span>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      {/* Banker Explanation Modal */}
+      {helpSection && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.6)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000,
+          padding: '20px'
+        }}>
+          <div style={{
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--card-border)',
+            borderRadius: '12px',
+            padding: '30px',
+            maxWidth: '500px',
+            width: '100%',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+            color: 'var(--text-primary)'
+          }}>
+            <h3 style={{ margin: '0 0 10px 0', color: 'var(--primary-purple)' }}>{helpDetails[helpSection].title}</h3>
+            <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: 'var(--highlight-cyan)', fontWeight: 'bold', marginBottom: '15px', letterSpacing: '0.5px' }}>
+              Underlying Technology: {helpDetails[helpSection].tech}
+            </div>
+            <p style={{ fontSize: '0.9rem', lineHeight: '1.6', color: 'var(--text-secondary)', marginBottom: '25px' }}>
+              {helpDetails[helpSection].desc}
+            </p>
+            <button
+              onClick={() => setHelpSection(null)}
+              style={{
+                width: '100%',
+                background: 'var(--gradient-btn)',
+                color: 'white',
+                padding: '12px',
+                borderRadius: '6px',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
+            >
+              Close Guide
+            </button>
+          </div>
+        </div>
+      )}
       
     </div>
   );

@@ -7,42 +7,42 @@ import { inMemoryDb } from '../db/inMemoryDb.js';
 const LOCALIZED_FALLBACKS = {
   Hindi: {
     worker: {
-      title: 'बेंगलुरु में आपका स्वागत है! 🌸',
+      title: 'बेंगलुरु में आपका स्वागत है!',
       message: 'नमस्ते {name} जी, बेंगलुरु में आपका स्वागत है! आपका SBI खाता देशव्यापी है। घर पैसे भेजने (Remittance) और स्थानीय UPI भुगतान तुरंत चालू करने के लिए यहाँ क्लिक करें। हम आपकी सुविधा के लिए यहाँ हैं।',
     },
     student: {
-      title: 'बेंगलुरु में आपका स्वागत है! 🎓',
+      title: 'बेंगलुरु में आपका स्वागत है!',
       message: 'नमस्ते {name}, नए शहर बेंगलुरु में आपकी पढ़ाई के सफर की शुभ शुरुआत! SBI स्टूडेंट सेविंग्स अकाउंट, तुरंत डिजिटल डेबिट कार्ड और आसान पॉकेट मनी ट्रांसफर का लाभ उठाने के लिए यहाँ टैप करें।',
     }
   },
   Kannada: {
     worker: {
-      title: 'ಬೆಂಗಳೂರಿಗೆ ಸುಸ್ವಾಗತ! 🌸',
+      title: 'ಬೆಂಗಳೂರಿಗೆ ಸುಸ್ವಾಗತ!',
       message: 'ನಮಸ್ತೆ {name} ಅವರೇ, ಬೆಂಗಳೂರಿಗೆ ಸುಸ್ವಾಗತ! ನಿಮ್ಮ SBI ಖಾತೆಯು ದೇಶಾದ್ಯಂತ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ. ಮನೆಗೆ ಸುಲಭವಾಗಿ ಹಣ ಕಳುಹಿಸಲು (Remittance) ಮತ್ತು ಸ್ಥಳೀಯ UPI ಪಾವತಿಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಇಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿ.',
     },
     student: {
-      title: 'ಬೆಂಗಳೂರಿಗೆ ಸುಸ್ವಾಗತ! 🎓',
+      title: 'ಬೆಂಗಳೂರಿಗೆ ಸುಸ್ವಾಗತ!',
       message: 'ನಮಸ್ತೆ {name}, ಬೆಂಗಳೂರಿನಲ್ಲಿ ನಿಮ್ಮ ವಿದ್ಯಾಭ್ಯಾಸದ ಪಯಣಕ್ಕೆ ಶುಭ ಹಾರೈಕೆಗಳು! ತ್ವರಿತ SBI ವಿದ್ಯಾರ್ಥಿ ಉಳಿತಾಯ ಖಾತೆ, ಡಿಜಿಟಲ್ ಡೆಬಿಟ್ ಕಾರ್ಡ್ ಪಡೆಯಲು ಮತ್ತು ಪೋಷಕರಿಂದ ಸುಲಭವಾಗಿ ಹಣ ಪಡೆಯಲು ಇಲ್ಲಿ ಕ್ಲಿಕ್ ಮಾಡಿ.',
     }
   },
   English: {
     worker: {
-      title: 'Welcome to {city}! 💼',
+      title: 'Welcome to {city}!',
       message: 'Hello {name}, welcome to {city}! Did you know your SBI account works nationwide? Tap here to instantly reactivate your account, set up hassle-free monthly remittances for your family, and register for local UPI QR payments.',
     },
     student: {
-      title: 'Welcome to {city}! 🎓',
+      title: 'Welcome to {city}!',
       message: 'Hi {name}, welcome to {city} for your studies! SBI is here to support you. Tap here to instantly open your SBI Insta Student Account, get a free virtual debit card, and pre-qualify for customized education loans.',
     }
   },
   Telugu: {
     worker: {
-      title: 'బెంగళూరుకు సుస్వాగతం! 🌸',
+      title: 'బెంగళూరుకు సుస్వాగతం!',
       message: 'నమస్తే {name} గారు, బెంగళూరుకు సుస్వాగతం! మీ SBI ఖాతా దేశవ్యాప్తంగా పనిచేస్తుంది. మీ ఇంటికి సులభంగా డబ్బు పంపడానికి (Remittance) మరియు స్థానిక UPI చెల్లింపులను ప్రారంభించడానికి ఇక్కడ క్లిక్ చేయండి.',
     },
     student: {
-      title: 'బెంగళూరుకు సుస్వాగతం! 🎓',
-      message: 'నమస్తే {name}, బెంగళూరులో మీ విద్యా ప్రయాణానికి శుభాకాంక్షలు! SBI స్టూడెంట్ సేవింగ్స్ ఖాతా, ఉచిత డిజిటల్ డెబిట్ కార్డ్ పొందడానికి మరియు సులభంగా పాకెట్ మనీ ట్రాన్స్‌ఫర్ కోసం ఇక్కడ క్లిక్ చేయండి.',
+      title: 'బెంగళూరుకు సుస్వాగతం!',
+      message: 'నమస్తే {name}, బెంగళూరులో మీ విద్యా ప్రయాణానికి శుభాకాంక్షలు! SBI స్టూడెంట్ సేవింగ్స్ ఖాతా, ఉచిత డిజిటల్ డెబిट కార్డ్ పొందడానికి మరియు సులಭంగా పాకెట్ మనీ ట్రాన్స్‌ఫర్ కోసం ఇక్కడ క్లిక్ చేయండి.',
     }
   }
 };
@@ -87,10 +87,11 @@ export const llmService = {
              - For students: Focus on student savings accounts, virtual debit cards, digital transactions, and education loans/pocket money. Keep it energetic and modern.
           3. Language: The output MUST be written in their preferred language (${preferredLanguage}), but using natural, conversational vocabulary. Use local scripts (Devanagari for Hindi, Kannada script for Kannada, etc.).
           4. Actionable: Include a clear call-to-action regarding their account status (reactivation or new account opening).
+          5. Emojis: Do not use any emojis, smileys, or special icons anywhere in the response. Strictly return plain text only.
           
           Return a JSON object in this exact format:
           {
-            "title": "A short, engaging, localized title with a friendly emoji",
+            "title": "A short, engaging, localized title (without any emojis)",
             "message": "The personalized notification message, under 250 characters.",
             "language": "${preferredLanguage}"
           }

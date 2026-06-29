@@ -221,6 +221,31 @@ export default function CustomerView({ isEmbedded = false }) {
     amount: ''
   });
 
+  const [isSaathiOpen, setIsSaathiOpen] = useState(false);
+  const [saathiMessages, setSaathiMessages] = useState([]);
+  const [saathiInput, setSaathiInput] = useState('');
+  const [saathiTyping, setSaathiTyping] = useState(false);
+
+  const handleSendQuickMessage = async (text) => {
+    const userMsg = { sender: 'user', text };
+    setSaathiMessages(prev => [...prev, userMsg]);
+    setSaathiTyping(true);
+
+    try {
+      const res = await fetch('/api/saathi/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: user.phone, message: text })
+      });
+      const data = await res.json();
+      setSaathiMessages(prev => [...prev, { sender: 'bot', text: data.response }]);
+    } catch (e) {
+      setSaathiMessages(prev => [...prev, { sender: 'bot', text: 'Sorry, I am having trouble connecting right now. Please try again.' }]);
+    } finally {
+      setSaathiTyping(false);
+    }
+  };
+
   const fetchState = async () => {
     if (!loggedInPhone) return;
     try {
@@ -300,6 +325,10 @@ export default function CustomerView({ isEmbedded = false }) {
     setNotification(null);
     setShowPrivacy(false);
     setLoanApplied(false);
+    setIsSaathiOpen(false);
+    setSaathiMessages([]);
+    setSaathiInput('');
+    setSaathiTyping(false);
   };
 
   const handleReactivate = async () => {
@@ -866,6 +895,164 @@ export default function CustomerView({ isEmbedded = false }) {
         {renderPhoneBody()}
       </div>
 
+      {/* Floating Chat Button */}
+      {loggedInPhone && user && !showPrivacy && !isSaathiOpen && (
+        <button
+          onClick={() => {
+            setIsSaathiOpen(true);
+            if (saathiMessages.length === 0) {
+              const welcomeText = user.segment === 'worker'
+                ? `नमस्ते ${user.name} जी, ${user.currentCity} में आपका स्वागत है। मैं आपका एसबीआई साथी हूँ। नए शहर में किराए के कमरे, कन्नड़ भाषा या पैसे सुरक्षित घर भेजने के बारे में मुझसे पूछें।`
+                : `Hi ${user.name}, welcome to ${user.currentCity} for your studies. I am your SBI Saathi companion. Ask me about local hostels, transit passes, Marathi greetings, or student education loans.`;
+              setSaathiMessages([{ sender: 'bot', text: welcomeText }]);
+            }
+          }}
+          style={{
+            position: 'absolute',
+            bottom: '65px',
+            right: '20px',
+            background: 'var(--secondary-magenta)',
+            color: 'white',
+            width: '56px',
+            height: '56px',
+            borderRadius: '28px',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 'bold',
+            fontSize: '0.75rem',
+            cursor: 'pointer',
+            border: '2px solid white'
+          }}
+        >
+          Saathi
+        </button>
+      )}
+
+      {/* Saathi Chat Screen Overlay */}
+      {isSaathiOpen && loggedInPhone && user && (
+        <div style={{
+          position: 'absolute',
+          top: '48px',
+          left: 0,
+          right: 0,
+          bottom: '48px',
+          background: 'var(--bg-primary)',
+          display: 'flex',
+          flexDirection: 'column',
+          zIndex: 1500
+        }}>
+          <div style={{ background: 'var(--primary-purple)', color: 'white', padding: '12px 15px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <strong style={{ color: 'white', fontSize: '0.85rem' }}>SBI Saathi</strong>
+            <button 
+              onClick={() => setIsSaathiOpen(false)}
+              style={{ background: 'transparent', color: 'white', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}
+            >
+              Close
+            </button>
+          </div>
+
+          <div style={{ flex: 1, padding: '15px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {saathiMessages.map((msg, i) => (
+              <div 
+                key={i} 
+                style={{
+                  alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+                  background: msg.sender === 'user' ? 'var(--secondary-magenta)' : 'var(--bg-secondary)',
+                  color: msg.sender === 'user' ? 'white' : 'var(--text-primary)',
+                  padding: '10px 14px',
+                  borderRadius: msg.sender === 'user' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
+                  maxWidth: '85%',
+                  fontSize: '0.8rem',
+                  lineHeight: '1.4',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                  border: msg.sender === 'user' ? 'none' : '1px solid var(--card-border)'
+                }}
+              >
+                {msg.text}
+              </div>
+            ))}
+            {saathiTyping && (
+              <div style={{ alignSelf: 'flex-start', background: 'var(--bg-secondary)', padding: '10px 14px', borderRadius: '12px', color: 'var(--text-secondary)', fontSize: '0.75rem' }}>
+                Saathi is typing...
+              </div>
+            )}
+          </div>
+
+          <div style={{ padding: '8px 12px', display: 'flex', gap: '8px', overflowX: 'auto', background: 'var(--bg-secondary)', borderTop: '1px solid var(--card-border)', scrollbarWidth: 'none' }}>
+            {user.segment === 'worker' ? (
+              <>
+                <button 
+                  onClick={() => handleSendQuickMessage("किराए के कमरे कहाँ मिलेंगे?")}
+                  style={{ padding: '6px 12px', background: 'var(--bg-primary)', border: '1px solid var(--card-border)', borderRadius: '12px', fontSize: '0.7rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', cursor: 'pointer' }}
+                >
+                  किराए का कमरा
+                </button>
+                <button 
+                  onClick={() => handleSendQuickMessage("कन्नड़ बोलना सीखें")}
+                  style={{ padding: '6px 12px', background: 'var(--bg-primary)', border: '1px solid var(--card-border)', borderRadius: '12px', fontSize: '0.7rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', cursor: 'pointer' }}
+                >
+                  कन्नड़ भाषा सीखें
+                </button>
+                <button 
+                  onClick={() => handleSendQuickMessage("घर पैसे सुरक्षित कैसे भेजें?")}
+                  style={{ padding: '6px 12px', background: 'var(--bg-primary)', border: '1px solid var(--card-border)', borderRadius: '12px', fontSize: '0.7rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', cursor: 'pointer' }}
+                >
+                  घर पैसे भेजना
+                </button>
+              </>
+            ) : (
+              <>
+                <button 
+                  onClick={() => handleSendQuickMessage("Where can I find student housing in Pune?")}
+                  style={{ padding: '6px 12px', background: 'var(--bg-primary)', border: '1px solid var(--card-border)', borderRadius: '12px', fontSize: '0.7rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', cursor: 'pointer' }}
+                >
+                  Hostels and PGs
+                </button>
+                <button 
+                  onClick={() => handleSendQuickMessage("Marathi words for daily transit")}
+                  style={{ padding: '6px 12px', background: 'var(--bg-primary)', border: '1px solid var(--card-border)', borderRadius: '12px', fontSize: '0.7rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', cursor: 'pointer' }}
+                >
+                  Marathi words
+                </button>
+                <button 
+                  onClick={() => handleSendQuickMessage("Tell me about pre-approved student education loans")}
+                  style={{ padding: '6px 12px', background: 'var(--bg-primary)', border: '1px solid var(--card-border)', borderRadius: '12px', fontSize: '0.7rem', color: 'var(--text-primary)', whiteSpace: 'nowrap', cursor: 'pointer' }}
+                >
+                  Education Loan
+                </button>
+              </>
+            )}
+          </div>
+
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!saathiInput.trim()) return;
+              handleSendQuickMessage(saathiInput);
+              setSaathiInput('');
+            }}
+            style={{ padding: '10px', background: 'var(--bg-secondary)', borderTop: '1px solid var(--card-border)', display: 'flex', gap: '8px' }}
+          >
+            <input 
+              type="text" 
+              value={saathiInput}
+              onChange={e => setSaathiInput(e.target.value)}
+              placeholder="Type a message..."
+              style={{ flex: 1, padding: '8px 12px', border: '1px solid var(--card-border)', borderRadius: '20px', fontSize: '0.8rem', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+            />
+            <button 
+              type="submit" 
+              style={{ padding: '8px 16px', background: 'var(--primary-purple)', color: 'white', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.8rem', cursor: 'pointer' }}
+            >
+              Send
+            </button>
+          </form>
+        </div>
+      )}
+
       {/* Android Navigation Bar */}
       <div style={{
         height: '48px',
@@ -876,7 +1063,7 @@ export default function CustomerView({ isEmbedded = false }) {
         borderTop: '1px solid #222'
       }}>
         <div style={{ width: '0', height: '0', borderTop: '8px solid transparent', borderBottom: '8px solid transparent', borderRight: '12px solid #888', cursor: 'pointer' }} onClick={handleLogout} title="Back to Login" />
-        <div style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid #888', cursor: 'pointer' }} onClick={() => setShowPrivacy(false)} title="Home" />
+        <div style={{ width: '16px', height: '16px', borderRadius: '50%', border: '2px solid #888', cursor: 'pointer' }} onClick={() => { setShowPrivacy(false); setIsSaathiOpen(false); }} title="Home" />
         <div style={{ width: '14px', height: '14px', border: '2px solid #888', borderRadius: '2px', cursor: 'pointer' }} />
       </div>
     </div>
