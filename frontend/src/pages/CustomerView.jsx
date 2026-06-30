@@ -56,8 +56,13 @@ export default function CustomerView() {
   const handleReactivate = async () => {
     if (!user) return;
     try {
-      await reactivateAccount(user.phone, otp);
+      const res = await reactivateAccount(user.phone, otp);
+      if (res && res.error) {
+        showError(res.error);
+        return;
+      }
       showSuccess('Account Successfully Reactivated!');
+      setOtp('');
       fetchState();
     } catch (e) {
       showError('Error reactivating account. Please try again.');
@@ -68,8 +73,13 @@ export default function CustomerView() {
     e.preventDefault();
     if (!user) return;
     try {
-      await setupRemittance({ phone: user.phone, ...remittanceData });
+      const res = await setupRemittance({ phone: user.phone, ...remittanceData });
+      if (res && res.error) {
+        showError(res.error);
+        return;
+      }
       showSuccess('Remittance Schedule Created Successfully!');
+      setRemittanceData({ beneficiaryName: '', beneficiaryAccount: '', amount: '' });
       fetchState();
     } catch (e) {
       showError('Error creating remittance. Please try again.');

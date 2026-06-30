@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import Header from './components/layout/Header';
 import Navbar from './components/layout/Navbar';
 import InfoPanel from './components/layout/InfoPanel';
@@ -53,7 +53,6 @@ const INFO_PANEL_DATA = {
 
 function AppContent() {
   const location = useLocation();
-  const navigate = useNavigate();
 
   const isDashboard = location.pathname === '/';
   const isCustomer  = location.pathname === '/customer';
@@ -73,11 +72,10 @@ function AppContent() {
     if (!isDemo) setLastSignal(null);
   }, [isDemo]);
 
-  // ── Handler: store signal result + navigate to /demo ──────────────────────
+  // ── Handler: store signal result (no longer auto-navigates) ───────────────
   const handleSignalSuccess = (signalData) => {
     if (signalData?.cityChangeDetected) {
       setLastSignal(signalData);
-      navigate('/demo');
     }
   };
 

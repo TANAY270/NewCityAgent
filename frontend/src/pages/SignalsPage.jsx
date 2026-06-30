@@ -37,8 +37,8 @@ export default function SignalsPage({ onSignalSuccess }) {
       setResponse(data);
       fetchSignals();
 
-      // If a city change was detected, hand off to App which will
-      // store the signal and navigate to /demo automatically.
+      // If a city change was detected, hand off to App so it can record the
+      // signal (no automatic navigation away from this page).
       if (data.cityChangeDetected && onSignalSuccess) {
         onSignalSuccess({ ...data, phone: form.phone, source: form.source });
       }
@@ -164,7 +164,7 @@ export default function SignalsPage({ onSignalSuccess }) {
             }}>
               {response.cityChangeDetected && (
                 <div style={{ color: '#fb923c', marginBottom: '10px', fontWeight: 'bold' }}>
-                  ⚠️ CITY CHANGE DETECTED! Navigating to Guided Demo...<br />
+                  ⚠️ CITY CHANGE DETECTED!<br />
                   Notification: {response.notification?.message}
                 </div>
               )}

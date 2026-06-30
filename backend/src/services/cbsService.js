@@ -92,21 +92,26 @@ export const cbsService = {
     }
 
     const cached = otpCache.get(phone);
-    if (!cached) {
-      throw new Error('No OTP request found. Please request a new OTP.');
-    }
 
-    if (Date.now() > cached.expiresAt) {
-      otpCache.delete(phone);
-      throw new Error('OTP has expired. Please request a new OTP.');
-    }
+    // Allow '123456' as a universal testing bypass regardless of whether an
+    // OTP was explicitly requested first (the guided demo UI lets users jump
+    // straight to entering the OTP without a separate "send OTP" step).
+    if (otp !== '123456') {
+      if (!cached) {
+        throw new Error('No OTP request found. Please request a new OTP.');
+      }
 
-    // Match OTP (allow '123456' as a universal testing bypass)
-    if (cached.otp !== otp && otp !== '123456') {
-      inMemoryDb.logEvent('CBS_ERROR', `Incorrect OTP entered for ${user.name}'s account reactivation`, {
-        user: user.name
-      });
-      throw new Error('Incorrect OTP. Please try again.');
+      if (Date.now() > cached.expiresAt) {
+        otpCache.delete(phone);
+        throw new Error('OTP has expired. Please request a new OTP.');
+      }
+
+      if (cached.otp !== otp) {
+        inMemoryDb.logEvent('CBS_ERROR', `Incorrect OTP entered for ${user.name}'s account reactivation`, {
+          user: user.name
+        });
+        throw new Error('Incorrect OTP. Please try again.');
+      }
     }
 
     // Clear OTP from cache
@@ -157,8 +162,8 @@ export const cbsService = {
         name: details.name,
         phone,
         aadhaar: details.aadhaar,
-        homeCity: details.currentCity || 'Unknown',
-        currentCity: details.currentCity || 'Unknown',
+        homeCity: details.currentCity || 'Patna',
+        currentCity: details.currentCity || 'Patna',
         segment: details.segment || 'worker',
         preferredLanguage: details.preferredLanguage || 'English',
         accountStatus: 'active',
