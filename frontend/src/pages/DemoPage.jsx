@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Component } from 'react';
+import React, { useState, Component } from 'react';
 import { triggerScenario, reactivateAccount, resetState } from '../services/api';
 import { Briefcase, GraduationCap, CheckCircle, ArrowRight, AlertTriangle, RotateCcw } from 'lucide-react';
 
@@ -30,34 +30,14 @@ class ErrorBoundary extends Component {
   }
 }
 
-function DemoPageInner({ lastSignal }) {
+function DemoPageInner() {
   const [step, setStep] = useState(1);
   const [scenario, setScenario] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState('');
+  const [otpError, setOtpError] = useState(null);
   const [error, setError] = useState(null);
-
-  // ── If we arrived here from SignalsPage with a city change already detected,
-  //    skip step 1 and jump straight to step 2 with that signal's data.
-  useEffect(() => {
-    if (lastSignal?.cityChangeDetected) {
-      setResult({
-        phone: lastSignal.phone,
-        source: lastSignal.source,
-        signalResult: {
-          cityChangeDetected: lastSignal.cityChangeDetected,
-          previousCity: lastSignal.previousCity,
-          newCity: lastSignal.newCity,
-          notification: lastSignal.notification,
-        }
-      });
-      // Infer scenario from known phone numbers; default to migrant_worker
-      if (lastSignal.phone === '9876543211') setScenario('student');
-      else setScenario('migrant_worker');
-      setStep(2);
-    }
-  }, [lastSignal]);
 
   const handleSelectScenario = async (scen) => {
     setError(null);
@@ -83,12 +63,33 @@ function DemoPageInner({ lastSignal }) {
 
   const handleReactivate = async () => {
     if (!result) return;
+
+    // ── OTP validation ──────────────────────────────────────────────────────
+    setOtpError(null);
+    if (!otp.trim()) {
+      setOtpError('Please enter the Aadhaar OTP to proceed.');
+      return;
+    }
+    if (!/^\d{6}$/.test(otp.trim())) {
+      setOtpError('OTP must be exactly 6 digits.');
+      return;
+    }
+    if (otp.trim() !== '123456') {
+      setOtpError('Incorrect OTP. Use 123456 for this demo.');
+      return;
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
     setError(null);
     setLoading(true);
     try {
       const phone = result.phone || '9876543210';
-      const res = await reactivateAccount(phone, otp);
+      const res = await reactivateAccount(phone, otp.trim());
       console.log('[DemoPage] reactivate response:', JSON.stringify(res));
+      if (res && res.error) {
+        setError(res.error);
+        return;
+      }
       setStep(4);
     } catch (e) {
       console.error('[DemoPage] reactivate error:', e);
@@ -100,6 +101,7 @@ function DemoPageInner({ lastSignal }) {
 
   const handleReset = async () => {
     setError(null);
+    setOtpError(null);
     try {
       await resetState();
     } catch (e) {
@@ -155,7 +157,7 @@ function DemoPageInner({ lastSignal }) {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '12px', color: 'var(--primary-purple)', fontSize: '1.75rem' }}>Select a Demo Scenario</h2>
           <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '48px' }}>
-            Or go to <strong>Signal Injector</strong> first — after a successful city change it will bring you here automatically.
+            Make sure you click <strong>Reset State</strong> on the Dashboard before running a fresh demo.
           </p>
           <div style={{ display: 'flex', gap: '32px', flex: 1 }}>
 
@@ -286,18 +288,37 @@ function DemoPageInner({ lastSignal }) {
             {scenario === 'migrant_worker' ? (
               <>
                 <h3 style={{ marginBottom: '20px', color: 'var(--text-primary)' }}>Reactivate Dormant Account</h3>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>Customer clicked the notification link to reactivate their account via Aadhaar OTP.</p>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                  Customer clicked the notification link to reactivate their account via Aadhaar OTP.
+                </p>
                 <input
                   type="text"
-                  placeholder="Enter Aadhaar OTP (e.g. 123456)"
+                  placeholder="Enter Aadhaar OTP (use 123456)"
                   value={otp}
-                  onChange={e => setOtp(e.target.value)}
-                  style={{ width: '100%', padding: '12px', border: '1px solid var(--card-border)', borderRadius: '4px', marginBottom: '15px', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+                  onChange={e => { setOtp(e.target.value); setOtpError(null); }}
+                  maxLength={6}
+                  style={{
+                    width: '100%', padding: '12px',
+                    border: otpError ? '1px solid #f87171' : '1px solid var(--card-border)',
+                    borderRadius: '4px', marginBottom: '8px',
+                    background: 'var(--bg-primary)', color: 'var(--text-primary)'
+                  }}
                 />
+                {/* Inline OTP error */}
+                {otpError && (
+                  <p style={{ color: '#b91c1c', fontSize: '0.85rem', marginBottom: '12px', textAlign: 'left' }}>
+                    ⚠ {otpError}
+                  </p>
+                )}
                 <button
                   onClick={handleReactivate}
-                  disabled={loading}
-                  style={{ width: '100%', background: 'var(--gradient-btn)', color: 'white', padding: '12px', borderRadius: '4px', fontWeight: 'bold', opacity: loading ? 0.7 : 1 }}
+                  disabled={loading || !otp.trim()}
+                  style={{
+                    width: '100%', background: 'var(--gradient-btn)', color: 'white',
+                    padding: '12px', borderRadius: '4px', fontWeight: 'bold',
+                    opacity: (loading || !otp.trim()) ? 0.6 : 1,
+                    cursor: (loading || !otp.trim()) ? 'not-allowed' : 'pointer'
+                  }}
                 >
                   {loading ? 'Verifying OTP...' : 'Verify OTP & Reactivate Account'}
                 </button>
@@ -343,10 +364,10 @@ function DemoPageInner({ lastSignal }) {
   );
 }
 
-export default function DemoPage({ lastSignal }) {
+export default function DemoPage() {
   return (
     <ErrorBoundary>
-      <DemoPageInner lastSignal={lastSignal} />
+      <DemoPageInner />
     </ErrorBoundary>
   );
 }
