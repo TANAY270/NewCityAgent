@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const InfoTooltip = ({ text }) => (
-  <div className="tooltip-container">
-    ?
-    <span className="tooltip-text">{text}</span>
-  </div>
-);
-
 export default function Onboarding() {
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState('');
@@ -34,27 +27,27 @@ export default function Onboarding() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>
-        NewCityAgent Onboarding
-        <InfoTooltip text="This page is for users to create an account or login. The bank admin can see how users start their journey." />
-      </h1>
+    <div style={{ padding: '20px', textAlign: 'center' }}>
+      <img src="/logo.png" alt="NewCityAgent Logo" style={{ maxWidth: '200px', marginBottom: '20px' }} />
+      <h2>This page is for users to create an account or login. The bank admin can see how users start their journey.</h2>
       
       {step === 1 && (
-        <div>
-          <button onClick={() => setMode('login')}>Login</button>
+        <div style={{ marginTop: '40px' }}>
+          <button onClick={() => setMode('login')} style={{ marginRight: '10px' }}>Login</button>
           <button onClick={() => setMode('create')}>Create Account</button>
           
           {mode && (
-            <form onSubmit={handleSendOtp} style={{ marginTop: '20px' }}>
-              <h2>{mode === 'login' ? 'Login' : 'Create Account'}</h2>
+            <form onSubmit={handleSendOtp} style={{ marginTop: '40px' }}>
+              <h3>{mode === 'login' ? 'Login' : 'Create Account'}</h3>
               <label>Mobile Number: </label>
+              <br/><br/>
               <input 
                 type="text" 
                 value={mobile} 
                 onChange={(e) => setMobile(e.target.value)} 
                 placeholder="10 digit number"
               />
+              <br/><br/>
               <button type="submit">Send OTP</button>
             </form>
           )}
@@ -62,14 +55,16 @@ export default function Onboarding() {
       )}
 
       {step === 2 && (
-        <form onSubmit={handleVerifyOtp}>
-          <h2>Enter OTP (Mock: 1234)</h2>
+        <form onSubmit={handleVerifyOtp} style={{ marginTop: '40px' }}>
+          <h3>Enter OTP (Mock: 1234)</h3>
           <label>OTP: </label>
+          <br/><br/>
           <input 
             type="text" 
             value={otp} 
             onChange={(e) => setOtp(e.target.value)} 
           />
+          <br/><br/>
           <button type="submit">Verify & Continue</button>
         </form>
       )}
