@@ -1,19 +1,39 @@
 import React, { useState, useEffect } from 'react';
+import { HelpCircle, X } from 'lucide-react';
+
+function HelpPopup({ title, content }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button onClick={() => setOpen(true)} style={{ background: 'transparent', padding: 0, color: 'var(--primary-color)' }}><HelpCircle size={18} /></button>
+      {open && (
+        <div className="popup-overlay" onClick={() => setOpen(false)}>
+          <div className="popup-content" onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+              <h3 style={{ margin: 0, color: 'var(--primary-color)' }}>{title}</h3>
+              <X size={20} style={{ cursor: 'pointer' }} onClick={() => setOpen(false)} />
+            </div>
+            <p style={{ margin: 0, lineHeight: 1.6 }}>{content}</p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function SignalsPage() {
   const [status, setStatus] = useState('');
   const [signals, setSignals] = useState([]);
-  const [users, setUsers] = useState([]);
+  
+  // Custom states for form
+  const [phone, setPhone] = useState('');
+  const [city, setCity] = useState('');
 
   const fetchData = async () => {
     try {
       const resSig = await fetch('/api/signals');
       const dataSig = await resSig.json();
       if (Array.isArray(dataSig)) setSignals(dataSig);
-
-      const resUsr = await fetch('/api/users');
-      const dataUsr = await resUsr.json();
-      if (Array.isArray(dataUsr)) setUsers(dataUsr);
     } catch (err) {
       console.error(err);
     }
@@ -25,14 +45,15 @@ export default function SignalsPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const sendSignal = async (type, location) => {
+  const sendSignal = async (type) => {
+    if (!city) return alert("Please specify a city");
     try {
       await fetch('/api/signals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ signal_type: type, location })
+        body: JSON.stringify({ signal_type: type, location: city })
       });
-      setStatus(`Signal Sent Successfully! (${type})`);
+      setStatus(`Signal Sent Successfully! (${type} in ${city})`);
       setTimeout(() => setStatus(''), 3000);
       fetchData();
     } catch (err) {
@@ -41,101 +62,73 @@ export default function SignalsPage() {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h1>Admin Dashboard & Signal Injection</h1>
-      <p>Simulate location changes and view live database logs.</p>
-
-      {/* KPI Cards */}
-      <div style={{ display: 'flex', gap: '20px', marginBottom: '30px', marginTop: '20px' }}>
-        <div style={{ flex: 1, border: '1px solid black', padding: '15px', textAlign: 'center' }}>
-          <h2>{users.length}</h2>
-          <p>Total Users Tracked</p>
-        </div>
-        <div style={{ flex: 1, border: '1px solid black', padding: '15px', textAlign: 'center' }}>
-          <h2>{signals.length}</h2>
-          <p>Signals Processed</p>
-        </div>
-        <div style={{ flex: 1, border: '1px solid black', padding: '15px', textAlign: 'center' }}>
-          <h2>{signals.length > 0 ? signals.length * 2 : 0}</h2>
-          <p>Notifications Sent</p>
-        </div>
+    <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
+      
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '30px' }}>
+        <h1 style={{ margin: 0, fontSize: '24px' }}>Signal Injection Tool</h1>
+        <HelpPopup 
+          title="Signal Injector" 
+          content="This tool directly calls the /api/signals endpoint, bypassing the guided demo UI. It lets you test arbitrary phone + city combinations to explore how the Location Processor identifies city changes."
+        />
       </div>
 
-      <div style={{ display: 'flex', gap: '40px' }}>
-        <div style={{ flex: 1, maxWidth: '300px' }}>
-          <h3>Inject Location Signal</h3>
-          {status && (
-            <div style={{ border: '1px solid black', padding: '10px', margin: '20px 0', backgroundColor: '#e6ffe6' }}>
-              <strong>{status}</strong>
+      <div style={{ display: 'flex', gap: '30px', flexWrap: 'wrap' }}>
+        
+        {/* Left Side: Form */}
+        <div style={{ flex: 1, minWidth: '400px' }}>
+          <div className="card">
+            <h3 style={{ marginTop: 0, marginBottom: '20px' }}>Inject Location Signal</h3>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ fontSize: '14px', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>Phone Number</label>
+              <input type="text" value={phone} onChange={e=>setPhone(e.target.value)} placeholder="e.g. 9876543210" />
             </div>
-          )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
-            <div style={{ border: '1px solid black', padding: '15px' }}>
-              <h4>UPI Geolocation</h4>
-              <button onClick={() => sendSignal('UPI', 'Delhi')} style={{ width: '100%', padding: '10px', marginTop: '10px' }}>Simulate Delhi Payment</button>
+
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ fontSize: '14px', fontWeight: 'bold', display: 'block', marginBottom: '8px' }}>City</label>
+              <input type="text" value={city} onChange={e=>setCity(e.target.value)} placeholder="Type or select city..." />
             </div>
-            <div style={{ border: '1px solid black', padding: '15px' }}>
-              <h4>ATM Geolocation</h4>
-              <button onClick={() => sendSignal('ATM', 'Mumbai')} style={{ width: '100%', padding: '10px', marginTop: '10px' }}>Simulate Mumbai ATM</button>
+
+            <label style={{ fontSize: '14px', fontWeight: 'bold', display: 'block', marginBottom: '10px' }}>Signal Source (Click to Inject)</label>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={() => sendSignal('UPI')} style={{ flex: 1, backgroundColor: 'transparent', color: 'var(--text-color)', border: '1px solid var(--primary-color)' }}>UPI</button>
+              <button onClick={() => sendSignal('ATM')} style={{ flex: 1, backgroundColor: 'transparent', color: 'var(--text-color)', border: '1px solid var(--primary-color)' }}>ATM</button>
+              <button onClick={() => sendSignal('SIM')} style={{ flex: 1, backgroundColor: 'transparent', color: 'var(--text-color)', border: '1px solid var(--primary-color)' }}>SIM</button>
             </div>
-            <div style={{ border: '1px solid black', padding: '15px' }}>
-              <h4>SIM Roaming</h4>
-              <button onClick={() => sendSignal('SIM Roaming', 'Bangalore')} style={{ width: '100%', padding: '10px', marginTop: '10px' }}>Simulate Bangalore Ping</button>
-            </div>
+
+            {status && (
+              <div style={{ marginTop: '20px', padding: '12px', backgroundColor: '#e6ffe6', color: '#166534', borderRadius: '8px', border: '1px solid #bbf7d0', textAlign: 'center', fontWeight: 'bold' }}>
+                {status}
+              </div>
+            )}
           </div>
         </div>
 
-        <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: '30px' }}>
-          <div>
-            <h3>Live Event Logs (Signals)</h3>
-            <div style={{ border: '1px solid black', height: '250px', overflowY: 'auto', backgroundColor: '#1e1e1e', color: '#00ff00', fontFamily: 'monospace' }}>
-              <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+        {/* Right Side: Table */}
+        <div style={{ flex: 1, minWidth: '400px' }}>
+          <div className="card" style={{ height: '100%' }}>
+            <h3 style={{ marginTop: 0, marginBottom: '20px' }}>Response & Recent Signals</h3>
+            <div className="table-container" style={{ maxHeight: '350px', overflowY: 'auto' }}>
+              <table>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #444' }}>
-                    <th style={{ padding: '10px' }}>Timestamp</th>
-                    <th style={{ padding: '10px' }}>Type</th>
-                    <th style={{ padding: '10px' }}>Location</th>
+                  <tr>
+                    <th>Phone (User ID)</th>
+                    <th>Source</th>
+                    <th>City</th>
+                    <th>Time</th>
                   </tr>
                 </thead>
                 <tbody>
                   {signals.map(s => (
-                    <tr key={s.id} style={{ borderBottom: '1px solid #333' }}>
-                      <td style={{ padding: '10px' }}>[{new Date(s.timestamp).toLocaleTimeString()}]</td>
-                      <td style={{ padding: '10px' }}>{s.signal_type}</td>
-                      <td style={{ padding: '10px' }}>{s.location}</td>
+                    <tr key={s.id}>
+                      <td>{s.user_id || phone || 'N/A'}</td>
+                      <td>{s.signal_type}</td>
+                      <td>{s.location}</td>
+                      <td>{new Date(s.timestamp).toLocaleTimeString()}</td>
                     </tr>
                   ))}
                   {signals.length === 0 && (
-                    <tr><td colSpan="3" style={{ padding: '20px', textAlign: 'center', color: '#888' }}>Waiting for signals...</td></tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div>
-            <h3>Registered Users</h3>
-            <div style={{ border: '1px solid black', height: '250px', overflowY: 'auto' }}>
-              <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid black', backgroundColor: '#f0f0f0' }}>
-                    <th style={{ padding: '10px' }}>Name</th>
-                    <th style={{ padding: '10px' }}>Phone</th>
-                    <th style={{ padding: '10px' }}>Persona</th>
-                    <th style={{ padding: '10px' }}>Joined</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map(u => (
-                    <tr key={u.id} style={{ borderBottom: '1px solid #ccc' }}>
-                      <td style={{ padding: '10px' }}>{u.name}</td>
-                      <td style={{ padding: '10px' }}>{u.phone}</td>
-                      <td style={{ padding: '10px', textTransform: 'capitalize' }}>{u.persona}</td>
-                      <td style={{ padding: '10px' }}>{new Date(u.created_at).toLocaleDateString()}</td>
-                    </tr>
-                  ))}
-                  {users.length === 0 && (
-                    <tr><td colSpan="4" style={{ padding: '20px', textAlign: 'center' }}>No users registered yet.</td></tr>
+                    <tr><td colSpan="4" style={{ textAlign: 'center', color: '#6b7280' }}>No signals logged yet.</td></tr>
                   )}
                 </tbody>
               </table>
@@ -143,6 +136,7 @@ export default function SignalsPage() {
           </div>
         </div>
       </div>
+      
     </div>
   );
 }

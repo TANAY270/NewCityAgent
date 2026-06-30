@@ -63,55 +63,56 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="moving-gradient" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
+    <div className="moving-gradient" style={{ minHeight: 'calc(100vh - 60px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
       
-      <div style={{ backgroundColor: 'var(--card-bg)', color: 'var(--text-color)', padding: '0', display: 'flex', flexWrap: 'wrap', maxWidth: '900px', width: '100%', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+      <div className="card" style={{ padding: '0', display: 'flex', flexWrap: 'wrap', maxWidth: '1000px', width: '100%', overflow: 'hidden', border: 'none' }}>
         
         {/* Left Column: Hero & Carousel */}
-        <div style={{ flex: 1, minWidth: '300px', padding: '40px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', borderBottom: '2px solid var(--primary-color)', paddingBottom: '20px', marginBottom: '20px' }}>
-            <img src="/logo.png" alt="Logo" style={{ width: '40px' }} />
-            <h1 style={{ margin: 0, color: 'var(--primary-color)', fontSize: '24px' }}>NewCityAgent</h1>
+        <div style={{ flex: 1, minWidth: '350px', padding: '50px', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--card-bg)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+            <h1 style={{ margin: 0, color: 'var(--text-color)', fontSize: '28px', fontWeight: '800' }}>NewCity<span style={{ color: 'var(--primary-color)' }}>Agent</span></h1>
           </div>
-          <h2 style={{ fontWeight: 'normal', color: 'var(--text-color)', fontSize: '16px', lineHeight: '1.6' }}>
-            An agentic banking solution designed to detect city-change patterns among internal migrants and proactively assist with account setup and remittance.
+          <h2 style={{ fontWeight: 'normal', color: 'var(--text-color)', fontSize: '18px', lineHeight: '1.6', opacity: 0.8 }}>
+            Agentic banking designed to detect city-change patterns among internal migrants and proactively assist with account setup.
           </h2>
 
-          <div style={{ marginTop: 'auto', border: '1px solid var(--border-color)', padding: '20px', textAlign: 'center' }}>
-            <img src={slides[slide].img} alt={slides[slide].title} style={{ height: '120px', objectFit: 'contain' }} />
-            <h3 style={{ color: 'var(--primary-color)', margin: '15px 0 5px 0' }}>{slides[slide].title}</h3>
-            <p style={{ fontSize: '14px', margin: 0 }}>{slides[slide].text}</p>
-            <div style={{ marginTop: '15px', display: 'flex', gap: '10px', justifyContent: 'center' }}>
-              <button onClick={() => setSlide(0)} style={{ opacity: slide === 0 ? 1 : 0.5, padding: '5px 15px' }}>1</button>
-              <button onClick={() => setSlide(1)} style={{ opacity: slide === 1 ? 1 : 0.5, padding: '5px 15px' }}>2</button>
+          <div style={{ marginTop: 'auto', textAlign: 'center', padding: '30px 0' }}>
+            <img src={slides[slide].img} alt={slides[slide].title} style={{ height: '180px', objectFit: 'contain', marginBottom: '20px' }} />
+            <h3 style={{ color: 'var(--primary-color)', margin: '0 0 10px 0', fontSize: '22px' }}>{slides[slide].title}</h3>
+            <p style={{ fontSize: '15px', margin: 0, opacity: 0.8 }}>{slides[slide].text}</p>
+            
+            {/* Carousel Dots */}
+            <div style={{ marginTop: '25px', display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <div onClick={() => setSlide(0)} style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: slide === 0 ? 'var(--primary-color)' : 'var(--border-color)', cursor: 'pointer', transition: '0.2s' }} />
+              <div onClick={() => setSlide(1)} style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: slide === 1 ? 'var(--primary-color)' : 'var(--border-color)', cursor: 'pointer', transition: '0.2s' }} />
             </div>
           </div>
         </div>
 
         {/* Right Column: Form */}
-        <div style={{ flex: 1, minWidth: '300px', padding: '40px', backgroundColor: 'var(--card-bg)', borderLeft: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div style={{ flex: 1, minWidth: '350px', padding: '50px', backgroundColor: 'var(--bg-color)', display: 'flex', flexDirection: 'column', justifyContent: 'center', borderLeft: '1px solid var(--border-color)' }}>
           {step === 1 && (
             <div>
-              <div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
-                <button onClick={() => setMode('login')} style={{ flex: 1, backgroundColor: mode==='login'?'var(--primary-color)':'transparent', color: mode==='login'?'white':'var(--text-color)', border: '1px solid var(--primary-color)' }}>Login</button>
-                <button onClick={() => setMode('create')} style={{ flex: 1, backgroundColor: mode==='create'?'var(--primary-color)':'transparent', color: mode==='create'?'white':'var(--text-color)', border: '1px solid var(--primary-color)' }}>Register</button>
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '40px' }}>
+                <button onClick={() => setMode('login')} style={{ flex: 1, backgroundColor: mode==='login'?'var(--primary-color)':'transparent', color: mode==='login'?'white':'var(--text-color)', border: mode==='login'?'none':'1px solid var(--border-color)' }}>Login</button>
+                <button onClick={() => setMode('create')} style={{ flex: 1, backgroundColor: mode==='create'?'var(--primary-color)':'transparent', color: mode==='create'?'white':'var(--text-color)', border: mode==='create'?'none':'1px solid var(--border-color)' }}>Register</button>
               </div>
               
               <form onSubmit={handleSendOtp}>
-                <h3 style={{ color: 'var(--primary-color)', marginBottom: '20px', fontSize: '20px', textTransform: 'uppercase' }}>
-                  {mode === 'login' ? 'Login to NewCityAgent' : 'Register for Access'}
+                <h3 style={{ marginBottom: '25px', fontSize: '24px' }}>
+                  {mode === 'login' ? 'Welcome Back' : 'Create an Account'}
                 </h3>
                 
                 {mode === 'create' && (
                   <div style={{ marginBottom: '20px' }}>
-                    <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Full Name *</label>
-                    <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Enter your full name" />
+                    <label style={{ fontSize: '14px', fontWeight: '600', display: 'block', marginBottom: '8px' }}>Full Name *</label>
+                    <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="e.g. Ramesh Kumar" />
                   </div>
                 )}
                 
                 {mode === 'create' && (
                   <div style={{ marginBottom: '20px' }}>
-                    <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Persona *</label>
+                    <label style={{ fontSize: '14px', fontWeight: '600', display: 'block', marginBottom: '8px' }}>Persona *</label>
                     <select value={persona} onChange={e => setPersona(e.target.value)}>
                       <option value="worker">Migrant Worker</option>
                       <option value="student">Student</option>
@@ -120,24 +121,25 @@ export default function Onboarding() {
                 )}
 
                 <div style={{ marginBottom: '30px' }}>
-                  <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Mobile Number *</label>
+                  <label style={{ fontSize: '14px', fontWeight: '600', display: 'block', marginBottom: '8px' }}>Mobile Number *</label>
                   <input type="text" value={mobile} onChange={e => setMobile(e.target.value)} placeholder="Enter 10 digit number" />
                 </div>
                 
-                <button type="submit" style={{ width: '100%' }}>Send OTP</button>
+                <button type="submit" style={{ width: '100%', padding: '14px', fontSize: '16px' }}>Send OTP</button>
               </form>
             </div>
           )}
 
           {step === 2 && (
             <form onSubmit={handleVerifyOtp}>
-              <h3 style={{ color: 'var(--primary-color)', marginBottom: '10px', fontSize: '20px', textTransform: 'uppercase' }}>OTP Verification</h3>
-              <p style={{ fontSize: '12px', color: 'var(--text-color)', marginBottom: '20px' }}>Use mock OTP: 1234</p>
+              <h3 style={{ marginBottom: '15px', fontSize: '24px' }}>OTP Verification</h3>
+              <p style={{ fontSize: '14px', opacity: 0.7, marginBottom: '30px' }}>Please enter the OTP sent to {mobile}. <br/><strong style={{color:'var(--primary-color)'}}>(Mock: 1234)</strong></p>
+              
               <div style={{ marginBottom: '30px' }}>
-                <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Enter OTP *</label>
-                <input type="text" value={otp} onChange={e => setOtp(e.target.value)} placeholder="Enter 4 digit OTP" />
+                <label style={{ fontSize: '14px', fontWeight: '600', display: 'block', marginBottom: '8px' }}>Enter OTP *</label>
+                <input type="text" value={otp} onChange={e => setOtp(e.target.value)} placeholder="XXXX" style={{ fontSize: '20px', letterSpacing: '4px', textAlign: 'center' }} />
               </div>
-              <button type="submit" style={{ width: '100%' }}>Verify & Proceed</button>
+              <button type="submit" style={{ width: '100%', padding: '14px', fontSize: '16px' }}>Verify & Proceed</button>
             </form>
           )}
         </div>

@@ -3,24 +3,42 @@ import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react
 import Onboarding from './pages/Onboarding';
 import MobileDemo from './pages/MobileDemo';
 import SignalsPage from './pages/SignalsPage';
+import { Moon, Sun, LogOut } from 'lucide-react';
 
 function Navigation({ theme, toggleTheme }) {
   const location = useLocation();
-  if (location.pathname === '/') return (
-    <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 100 }}>
-       <button onClick={toggleTheme}>Toggle {theme === 'light' ? 'Dark' : 'Light'} Mode</button>
-    </div>
-  ); 
-  
+  const isAuthPage = location.pathname === '/';
+
   return (
-    <nav style={{ padding: '15px 30px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--card-bg)' }}>
-      <div style={{ display: 'flex', gap: '20px' }}>
-        <Link to="/" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: 'bold' }}>Home</Link>
-        <Link to="/demo" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: 'bold' }}>Mobile Demo Flow</Link>
-        <Link to="/signals" style={{ color: 'var(--primary-color)', textDecoration: 'none', fontWeight: 'bold' }}>Signal Injection</Link>
+    <>
+      {/* Top Black Header */}
+      <div style={{ backgroundColor: '#0f0f0f', padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #222' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <img src="/logo.png" alt="Logo" style={{ height: '28px', filter: 'brightness(0) invert(1)' }} />
+          <h2 style={{ margin: 0, color: 'white', fontSize: '20px', fontWeight: '800' }}>
+            NewCity<span style={{ color: '#00e5ff', fontWeight: '400' }}>Agent</span>
+          </h2>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <button onClick={toggleTheme} style={{ background: 'transparent', padding: '0', color: 'white', border: 'none' }} title="Toggle Dark Mode">
+            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
+          {!isAuthPage && (
+            <Link to="/" style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', fontSize: '14px', fontWeight: '600' }}>
+              <LogOut size={16} /> Log Out
+            </Link>
+          )}
+        </div>
       </div>
-      <button onClick={toggleTheme}>Toggle {theme === 'light' ? 'Dark' : 'Light'} Mode</button>
-    </nav>
+
+      {/* Stylish Tab Navigation */}
+      {!isAuthPage && (
+        <nav style={{ background: 'var(--nav-bg)', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '30px' }}>
+          <Link to="/demo" style={{ color: 'white', textDecoration: 'none', padding: '16px 0', borderBottom: location.pathname === '/demo' ? '3px solid #00e5ff' : '3px solid transparent', fontWeight: location.pathname === '/demo' ? 'bold' : 'normal', opacity: location.pathname === '/demo' ? 1 : 0.8 }}>Customer Simulator</Link>
+          <Link to="/signals" style={{ color: 'white', textDecoration: 'none', padding: '16px 0', borderBottom: location.pathname === '/signals' ? '3px solid #00e5ff' : '3px solid transparent', fontWeight: location.pathname === '/signals' ? 'bold' : 'normal', opacity: location.pathname === '/signals' ? 1 : 0.8 }}>Signal Injector</Link>
+        </nav>
+      )}
+    </>
   );
 }
 
