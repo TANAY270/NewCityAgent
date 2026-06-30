@@ -32,13 +32,20 @@ export default function Onboarding() {
       if (mode === 'create') {
         if (!name) return alert('Name is required');
         try {
-          await fetch('http://localhost:3000/api/users', {
+          const res = await fetch('/api/users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, phone: mobile, persona })
           });
+          const data = await res.json();
+          if (data.error) {
+            alert('Database Error: ' + data.error);
+            return; // Stop flow if DB error
+          }
         } catch (err) {
           console.error('Failed to create user DB entry:', err);
+          alert('Network error communicating with backend.');
+          return;
         }
       }
       setStep(2);
