@@ -1,8 +1,6 @@
-import React, { useState, Component } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import { triggerScenario, reactivateAccount, resetState } from '../services/api';
 import { Briefcase, GraduationCap, CheckCircle, ArrowRight, AlertTriangle, RotateCcw } from 'lucide-react';
-
-
 
 // Error Boundary to catch render crashes and show a useful message instead of white screen
 class ErrorBoundary extends Component {
@@ -32,13 +30,34 @@ class ErrorBoundary extends Component {
   }
 }
 
-function DemoPageInner() {
+function DemoPageInner({ lastSignal }) {
   const [step, setStep] = useState(1);
   const [scenario, setScenario] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [otp, setOtp] = useState('');
   const [error, setError] = useState(null);
+
+  // ── If we arrived here from SignalsPage with a city change already detected,
+  //    skip step 1 and jump straight to step 2 with that signal's data.
+  useEffect(() => {
+    if (lastSignal?.cityChangeDetected) {
+      setResult({
+        phone: lastSignal.phone,
+        source: lastSignal.source,
+        signalResult: {
+          cityChangeDetected: lastSignal.cityChangeDetected,
+          previousCity: lastSignal.previousCity,
+          newCity: lastSignal.newCity,
+          notification: lastSignal.notification,
+        }
+      });
+      // Infer scenario from known phone numbers; default to migrant_worker
+      if (lastSignal.phone === '9876543211') setScenario('student');
+      else setScenario('migrant_worker');
+      setStep(2);
+    }
+  }, [lastSignal]);
 
   const handleSelectScenario = async (scen) => {
     setError(null);
@@ -136,7 +155,7 @@ function DemoPageInner() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           <h2 style={{ textAlign: 'center', marginBottom: '12px', color: 'var(--primary-purple)', fontSize: '1.75rem' }}>Select a Demo Scenario</h2>
           <p style={{ textAlign: 'center', color: 'var(--text-secondary)', marginBottom: '48px' }}>
-            Make sure you click <strong>Reset State</strong> on the Dashboard before running a fresh demo.
+            Or go to <strong>Signal Injector</strong> first — after a successful city change it will bring you here automatically.
           </p>
           <div style={{ display: 'flex', gap: '32px', flex: 1 }}>
 
@@ -308,8 +327,8 @@ function DemoPageInner() {
           <h2 style={{ marginBottom: '10px', color: 'var(--primary-purple)' }}>Journey Complete!</h2>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '30px' }}>
             {scenario === 'migrant_worker'
-              ? 'Ramesh successfully reactivated his account in Bengaluru and set up a remittance home.'
-              : 'Priya successfully opened her new digital Insta Savings Account in Pune.'}
+              ? `Ramesh successfully reactivated his account after relocating from ${prevCity} to ${newCity}.`
+              : `Priya successfully opened her new Insta Savings Account in ${newCity}.`}
           </p>
           <button
             onClick={handleReset}
@@ -320,16 +339,14 @@ function DemoPageInner() {
         </div>
       )}
 
-
-
     </div>
   );
 }
 
-export default function DemoPage() {
+export default function DemoPage({ lastSignal }) {
   return (
     <ErrorBoundary>
-      <DemoPageInner />
+      <DemoPageInner lastSignal={lastSignal} />
     </ErrorBoundary>
   );
 }

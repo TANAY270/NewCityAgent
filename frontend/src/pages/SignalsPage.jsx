@@ -2,14 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { getState } from '../services/api';
 import { Smartphone, CreditCard, Send } from 'lucide-react';
 
-
-
-export default function SignalsPage() {
+export default function SignalsPage({ onSignalSuccess }) {
   const [form, setForm] = useState({ phone: '', source: 'ATM', city: '' });
   const [response, setResponse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [signals, setSignals] = useState([]);
-  
+
   const cities = ['Mumbai', 'Delhi', 'Bengaluru', 'Pune', 'Chennai', 'Hyderabad', 'Kolkata', 'Patna', 'Ranchi', 'Ahmedabad'];
 
   const fetchSignals = async () => {
@@ -38,6 +36,12 @@ export default function SignalsPage() {
       const data = await res.json();
       setResponse(data);
       fetchSignals();
+
+      // If a city change was detected, hand off to App which will
+      // store the signal and navigate to /demo automatically.
+      if (data.cityChangeDetected && onSignalSuccess) {
+        onSignalSuccess({ ...data, phone: form.phone, source: form.source });
+      }
     } catch (e) {
       setResponse({ error: e.message });
     } finally {
@@ -48,9 +52,8 @@ export default function SignalsPage() {
   return (
     <div style={{ padding: '40px 80px' }}>
 
-
       <h2 style={{ color: 'var(--primary-purple)', marginBottom: '20px' }}>Signal Injection Tool</h2>
-      
+
       <div style={{ display: 'flex', gap: '40px' }}>
         {/* Form Column */}
         <div style={{ flex: 1 }}>
@@ -65,9 +68,9 @@ export default function SignalsPage() {
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: '15px' }}>
                 <label style={{ display: 'block', marginBottom: '5px', color: 'var(--text-secondary)' }}>Phone Number</label>
-                <input 
-                  type="text" 
-                  value={form.phone} 
+                <input
+                  type="text"
+                  value={form.phone}
                   onChange={e => setForm({...form, phone: e.target.value})}
                   required
                   placeholder="e.g. 9876543210"
@@ -106,9 +109,9 @@ export default function SignalsPage() {
 
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ display: 'block', marginBottom: '5px', color: 'var(--text-secondary)' }}>City</label>
-                <input 
-                  type="text" 
-                  value={form.city} 
+                <input
+                  type="text"
+                  value={form.city}
                   onChange={e => setForm({...form, city: e.target.value})}
                   required
                   list="city-list"
@@ -120,8 +123,8 @@ export default function SignalsPage() {
                 </datalist>
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={loading}
                 style={{
                   width: '100%',
@@ -146,7 +149,7 @@ export default function SignalsPage() {
         {/* Response Column */}
         <div style={{ flex: 1 }}>
           <h3 style={{ marginBottom: '20px', color: 'var(--text-primary)' }}>Response & Recent Signals</h3>
-          
+
           {response && (
             <div style={{
               background: '#0a0a0a',
@@ -161,7 +164,7 @@ export default function SignalsPage() {
             }}>
               {response.cityChangeDetected && (
                 <div style={{ color: '#fb923c', marginBottom: '10px', fontWeight: 'bold' }}>
-                  ⚠️ CITY CHANGE DETECTED!<br/>
+                  ⚠️ CITY CHANGE DETECTED! Navigating to Guided Demo...<br />
                   Notification: {response.notification?.message}
                 </div>
               )}
@@ -192,7 +195,7 @@ export default function SignalsPage() {
                     <tr key={i} style={{ borderBottom: '1px solid #eee' }}>
                       <td style={{ padding: '12px 15px' }}>{sig.phone}</td>
                       <td style={{ padding: '12px 15px' }}>
-                        <span style={{ 
+                        <span style={{
                           background: sig.source === 'SIM' ? '#3e1b7020' : '#b0185e20',
                           color: sig.source === 'SIM' ? 'var(--primary-purple)' : 'var(--secondary-magenta)',
                           padding: '2px 8px',

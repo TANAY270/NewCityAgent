@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, useLocation, useNavigate } from 'react-router-dom';
 import Header from './components/layout/Header';
 import Navbar from './components/layout/Navbar';
 import InfoPanel from './components/layout/InfoPanel';
@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard';
 import CustomerView from './pages/CustomerView';
 import DemoPage from './pages/DemoPage';
 import SignalsPage from './pages/SignalsPage';
+
+// ─── Info Panel Content ──────────────────────────────────────────────────────
 
 const INFO_PANEL_DATA = {
   '/': {
@@ -47,46 +49,80 @@ const INFO_PANEL_DATA = {
   }
 };
 
+// ─── Inner App (needs Router context for useLocation / useNavigate) ───────────
+
 function AppContent() {
   const location = useLocation();
+  const navigate = useNavigate();
+
   const isDashboard = location.pathname === '/';
-  const isCustomer = location.pathname === '/customer';
-  const isDemo = location.pathname === '/demo';
-  const isSignals = location.pathname === '/signals';
+  const isCustomer  = location.pathname === '/customer';
+  const isDemo      = location.pathname === '/demo';
+  const isSignals   = location.pathname === '/signals';
 
   const panelData = INFO_PANEL_DATA[location.pathname] || INFO_PANEL_DATA['/'];
+
+  // ── Global state: last injected signal result ──────────────────────────────
+  // Set by SignalsPage when a city-change signal is successfully sent.
+  // Read by DemoPage to skip straight to Step 2 with the detected city.
+  const [lastSignal, setLastSignal] = useState(null);
+
+  // Clear lastSignal whenever the user navigates away from /demo
+  // so a stale signal doesn't auto-skip step 1 on the next visit.
+  useEffect(() => {
+    if (!isDemo) setLastSignal(null);
+  }, [isDemo]);
+
+  // ── Handler: store signal result + navigate to /demo ──────────────────────
+  const handleSignalSuccess = (signalData) => {
+    if (signalData?.cityChangeDetected) {
+      setLastSignal(signalData);
+      navigate('/demo');
+    }
+  };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Header />
       <Navbar />
-      
-      {/* The Main Pink Gradient Banner */}
+
+      {/* Pink Gradient Banner */}
       <div style={{
         background: 'var(--gradient-banner)',
         padding: '20px 40px',
         color: 'white',
         boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
       }}>
-        <h1 style={{ fontSize: '1.5rem', margin: 0, fontWeight: '600' }}>Agentic Banking Solution for Migrant Workers and Students</h1>
+        <h1 style={{ fontSize: '1.5rem', margin: 0, fontWeight: '600' }}>
+          Agentic Banking Solution for Migrant Workers and Students
+        </h1>
       </div>
-      
+
       <main style={{ flexGrow: 1, backgroundColor: 'var(--bg-primary)', position: 'relative' }}>
+
+        {/* Dashboard — always mounted, hidden when not active (preserves SSE connection) */}
         <div style={{ display: isDashboard ? 'block' : 'none' }}>
           <Dashboard />
         </div>
+
+        {/* Guided Demo — receives lastSignal to auto-advance to Step 2 */}
         <div style={{ display: isDemo ? 'block' : 'none' }}>
-          <DemoPage />
+          <DemoPage lastSignal={lastSignal} />
         </div>
+
+        {/* Customer Simulator */}
         <div style={{ display: isCustomer ? 'block' : 'none' }}>
           <CustomerView />
         </div>
+
+        {/* Signal Injector — calls handleSignalSuccess on city change */}
         <div style={{ display: isSignals ? 'block' : 'none' }}>
-          <SignalsPage />
+          <SignalsPage onSignalSuccess={handleSignalSuccess} />
         </div>
+
       </main>
 
-      {/* InfoPanel — always at the bottom of every page */}
+      {/* InfoPanel — always visible at the bottom, content switches by route */}
       <div style={{ backgroundColor: 'var(--bg-primary)', padding: '0 80px 40px' }}>
         <InfoPanel
           instructions={panelData.instructions}
@@ -97,6 +133,8 @@ function AppContent() {
   );
 }
 
+// ─── Root App ─────────────────────────────────────────────────────────────────
+
 function App() {
   return (
     <Router>
@@ -105,4 +143,4 @@ function App() {
   );
 }
 
-export default App; // Trigger HMR
+export default App;
