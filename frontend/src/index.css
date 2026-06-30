@@ -1,69 +1,55 @@
-:root {
-  /* Yono Brand Colors - Light Mode Defaults */
-  --bg-primary: #f5f6f8;
-  --bg-secondary: #ffffff;
-  --bg-topbar: #000000;
-  --bg-navbar: #1c1f24;
-  
-  --text-primary: #111111;
-  --text-secondary: #555555;
-  --text-inverse: #ffffff;
-  
-  --primary-purple: #3e1b70;
-  --secondary-magenta: #b0185e;
-  --accent-lilac: #8589ff;
-  --highlight-cyan: #00a2e0;
-  
-  --card-border: #e0e0e0;
-  --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
-
-  --gradient-banner: linear-gradient(135deg, #f02d6b 0%, #3a1c71 100%);
-  --gradient-btn: linear-gradient(90deg, #b0185e 0%, #3e1b70 100%);
-}
-
-.dark {
-  /* Yono Brand Colors - Dark Mode */
-  --bg-primary: #121212;
-  --bg-secondary: #1e1e1e;
-  --bg-topbar: #000000;
-  --bg-navbar: #2a2a2a;
-  
-  --text-primary: #f0f0f0;
-  --text-secondary: #aaaaaa;
-  
-  --card-border: #333333;
-  --card-shadow: 0 4px 6px rgba(0,0,0,0.3);
-}
-
-* {
+body {
+  background-color: white;
+  color: black;
+  font-family: sans-serif;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-h1, h2, h3, h4, h5, h6, p, span, div {
-  color: inherit;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-ul {
-  list-style: none;
 }
 
 button {
   cursor: pointer;
-  border: none;
-  outline: none;
-  font-family: inherit;
+  padding: 5px 10px;
+  margin: 5px;
+  border: 1px solid black;
+  background-color: white;
+  color: black;
+}
+
+input {
+  padding: 5px;
+  margin: 5px;
+  border: 1px solid black;
+}
+
+.tooltip-container {
+  display: inline-block;
+  position: relative;
+  cursor: help;
+  margin-left: 8px;
+  border: 1px solid black;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  line-height: 18px;
+  font-size: 14px;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 200px;
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+  text-align: center;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -100px;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
 }
