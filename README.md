@@ -1,6 +1,6 @@
 # NewCityAgent — Migrant Worker & Student Onboarding
 
-NewCityAgent is an agentic banking solution designed to detect city-change patterns among internal migrants in India and proactively assist them with account reactivation, new account opening, and remittance setup.
+NewCityAgent is an agentic banking solution designed to detect city-change patterns among internal migrants in India and proactively assist them with account reactivation, new account opening, and localized digital onboarding.
 
 Developed as part of **Idea #7 (Pillar 1)**, this system aims to capture the critical transition window when a customer moves to a new city, preventing them from defaulting to informal channels or competitor banks.
 
@@ -16,8 +16,8 @@ Developed as part of **Idea #7 (Pillar 1)**, this system aims to capture the cri
 
 ## User Personas
 
-- **Internal Migrant Workers:** Individuals relocating for employment who require rapid, reliable remittance services to send money home to their families.
-- **Students (Ages 18–24):** Individuals moving for higher education who require student accounts, digital payment setups, and potential education loan pre-qualification.
+- **Internal Migrant Workers:** Individuals relocating for employment who require rapid, localized onboarding and immediate account reactivation.
+- **Students (Ages 18–24):** Individuals moving for higher education who require student accounts, digital payment setups, and pre-qualified city-specific access cards.
 
 ---
 
@@ -34,8 +34,8 @@ The agent monitors consented signals to identify relocation and tailors the outr
 ### 2. Tailored Journeys
 
 - **Dormant Account Holders:** If the system detects a dormant SBI account, it prioritizes a guided reactivation flow.
-- **Student Segment (Ages 18–24):** Offers student-specific account features and pre-qualification for educational loans.
-- **Worker Segment:** Highlights remittance products, enabling low-friction domestic money transfers.
+- **Student Segment (Ages 18–24):** Offers student-specific account features and pre-qualification for a Campus Digital Wallet.
+- **Worker Segment:** Highlights instant digital account reactivation, enabling low-friction localized banking.
 
 ---
 
@@ -66,8 +66,7 @@ graph TD
 - **UPI Address Registry:** For detecting billing and payment address updates.
 - **YONO Geolocation Events:** To track mobile banking login locations.
 - **CBS Dormancy Flag:** To check whether a returning customer has an inactive account.
-- **Insta Account Engine:** For instant, digital-first account opening.
-- **YONO Money Transfer Module:** To facilitate immediate remittance setup.
+- **Insta Account Engine:** For instant, digital-first account opening and virtual card issuance.
 
 ---
 
@@ -78,8 +77,8 @@ graph TD
    > _"Welcome to [City]. Your SBI account works nationwide — here is how to use it locally."_
 3. **Reactivation (For Dormant Accounts):** Guided, in-app reactivation via YONO using Aadhaar OTP authentication.
 4. **Onboarding (For New Accounts):** Insta Savings Account application flow presented in the customer's preferred regional language.
-5. **Value Demonstration:** A localized demo of the remittance feature:
-   > _"Send money home in 10 seconds with YONO."_
+5. **Value Demonstration:** A localized demo of the new City Flex features:
+   > _"Your City Access Virtual Card is ready in 10 seconds with YONO."_
 6. **Engagement Nudge (Week 2):** A follow-up prompt to register for UPI to facilitate local QR-code payments.
 
 ---
@@ -96,7 +95,7 @@ graph TD
 
 - **Dormant Account Reactivations:** Percentage of dormant accounts successfully reactivated post-relocation.
 - **New Account Acquisition:** Conversion rate of newly arrived migrants without prior accounts.
-- **Remittance Adoption:** Percentage of users completing their first domestic money transfer within 14 days of relocation.
+- **Virtual Card Issuance:** Percentage of users successfully claiming their City Flex Virtual Card within 14 days of relocation.
 - **UPI Velocity:** Active local transaction rate in the new city.
 
 ---
@@ -108,4 +107,4 @@ The prototype demonstrates a complete end-to-end flow in a **4-minute scenario**
 1. A customer with a **dormant account** moves to a new city.
 2. A simulated **city-change signal** is generated.
 3. The system triggers a personalized welcome notification.
-4. The customer completes **Aadhaar-based reactivation** and sets up a **remittance schedule** in a single flow.
+4. The customer completes **Aadhaar-based reactivation** and is instantly issued a **City Flex Virtual Card** in a single flow.

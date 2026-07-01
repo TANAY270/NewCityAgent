@@ -34,8 +34,8 @@ function Navigation({ theme, toggleTheme }) {
       {/* Stylish Tab Navigation */}
       {!isAuthPage && (
         <nav style={{ background: 'var(--nav-bg)', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '30px' }}>
-          <Link to="/demo" style={{ color: 'white', textDecoration: 'none', padding: '16px 0', borderBottom: location.pathname === '/demo' ? '3px solid #00e5ff' : '3px solid transparent', fontWeight: location.pathname === '/demo' ? 'bold' : 'normal', opacity: location.pathname === '/demo' ? 1 : 0.8 }}>Customer Simulator</Link>
-          <Link to="/signals" style={{ color: 'white', textDecoration: 'none', padding: '16px 0', borderBottom: location.pathname === '/signals' ? '3px solid #00e5ff' : '3px solid transparent', fontWeight: location.pathname === '/signals' ? 'bold' : 'normal', opacity: location.pathname === '/signals' ? 1 : 0.8 }}>Signal Injector</Link>
+          <Link to="/demo" style={{ color: 'white', textDecoration: 'none', padding: '16px 0', borderBottom: location.pathname === '/demo' ? '3px solid #00e5ff' : '3px solid transparent', fontWeight: location.pathname === '/demo' ? 'bold' : 'normal', opacity: location.pathname === '/demo' ? 1 : 0.8 }}>Reactivation Simulator</Link>
+          <Link to="/signals" style={{ color: 'white', textDecoration: 'none', padding: '16px 0', borderBottom: location.pathname === '/signals' ? '3px solid #00e5ff' : '3px solid transparent', fontWeight: location.pathname === '/signals' ? 'bold' : 'normal', opacity: location.pathname === '/signals' ? 1 : 0.8 }}>Intent Signals</Link>
         </nav>
       )}
     </>

@@ -14,12 +14,12 @@ export default function Onboarding() {
     {
       img: '/worker.png',
       title: 'Migrant Workers',
-      text: 'Seamless account reactivation and remittance setup for internal migrants.'
+      text: 'Lower CAC by seamlessly reactivating dormant accounts and issuing localized virtual cards when internal migrants relocate.'
     },
     {
       img: '/student.png',
       title: 'Students',
-      text: 'Instant digital accounts and pre-qualified education loans for students.'
+      text: 'Acquire the next generation of customers by identifying student relocations and offering pre-qualified conversational onboarding.'
     }
   ];
 
@@ -73,7 +73,7 @@ export default function Onboarding() {
             <h1 style={{ margin: 0, color: 'var(--text-color)', fontSize: '28px', fontWeight: '800' }}>NewCity<span style={{ color: 'var(--primary-color)' }}>Agent</span></h1>
           </div>
           <h2 style={{ fontWeight: 'normal', color: 'var(--text-color)', fontSize: '18px', lineHeight: '1.6', opacity: 0.8 }}>
-            Agentic banking designed to detect city-change patterns among internal migrants and proactively assist with account setup.
+            Agentic AI that lowers CAC by detecting life-events (like city changes) to intelligently reactivate dormant accounts through hyper-personalised engagement.
           </h2>
 
           <div style={{ marginTop: 'auto', textAlign: 'center', padding: '30px 0' }}>
@@ -94,8 +94,8 @@ export default function Onboarding() {
           {step === 1 && (
             <div>
               <div style={{ display: 'flex', gap: '10px', marginBottom: '40px' }}>
-                <button onClick={() => setMode('login')} style={{ flex: 1, backgroundColor: mode==='login'?'var(--primary-color)':'transparent', color: mode==='login'?'white':'var(--text-color)', border: mode==='login'?'none':'1px solid var(--border-color)' }}>Login</button>
-                <button onClick={() => setMode('create')} style={{ flex: 1, backgroundColor: mode==='create'?'var(--primary-color)':'transparent', color: mode==='create'?'white':'var(--text-color)', border: mode==='create'?'none':'1px solid var(--border-color)' }}>Register</button>
+                <button onClick={() => setMode('login')} style={{ flex: 1, background: mode==='login'?'var(--nav-bg)':'transparent', color: mode==='login'?'white':'var(--text-color)', border: mode==='login'?'none':'1px solid var(--border-color)' }}>Login</button>
+                <button onClick={() => setMode('create')} style={{ flex: 1, background: mode==='create'?'var(--nav-bg)':'transparent', color: mode==='create'?'white':'var(--text-color)', border: mode==='create'?'none':'1px solid var(--border-color)' }}>Register</button>
               </div>
               
               <form onSubmit={handleSendOtp}>

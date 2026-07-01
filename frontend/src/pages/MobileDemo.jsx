@@ -78,15 +78,15 @@ export default function MobileDemo() {
       
       <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <h1 style={{ margin: 0, fontSize: '24px' }}>Customer Simulator</h1>
+          <h1 style={{ margin: 0, fontSize: '24px' }}>Reactivation Simulator</h1>
           <HelpPopup 
             title="Simulator Logic" 
-            content="This module simulates the end-to-end customer journey on a mobile device. Trigger a scenario, and watch how the agent detects location changes and guides the user through Reactivation or Account Opening." 
+            content="This module simulates a dormant account reactivation journey. Trigger a scenario, and watch how the agent identifies a dormant customer, qualifies their new location intent, and converts them to active status." 
           />
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button style={{ backgroundColor: persona === 'worker' ? 'var(--primary-color)' : 'transparent', color: persona === 'worker' ? 'white' : 'var(--text-color)', border: '1px solid var(--primary-color)' }} onClick={() => resetFlow('worker')}>Migrant Worker Demo</button>
-          <button style={{ backgroundColor: persona === 'student' ? 'var(--primary-color)' : 'transparent', color: persona === 'student' ? 'white' : 'var(--text-color)', border: '1px solid var(--primary-color)' }} onClick={() => resetFlow('student')}>Student Demo</button>
+          <button style={{ background: persona === 'worker' ? 'var(--nav-bg)' : 'transparent', color: persona === 'worker' ? 'white' : 'var(--text-color)', border: '1px solid var(--primary-color)' }} onClick={() => resetFlow('worker')}>Migrant Worker Demo</button>
+          <button style={{ background: persona === 'student' ? 'var(--nav-bg)' : 'transparent', color: persona === 'student' ? 'white' : 'var(--text-color)', border: '1px solid var(--primary-color)' }} onClick={() => resetFlow('student')}>Student Demo</button>
         </div>
       </div>
 
@@ -156,12 +156,12 @@ export default function MobileDemo() {
 
                 {step === 5 && (
                   <div style={{ marginTop: '40px', textAlign: 'center' }}>
-                    <h2 style={{ color: '#10b981' }}>{persona === 'worker' ? 'Account Active' : 'Student Account Active'}</h2>
-                    <div style={{ marginTop: '40px', border: '1px solid var(--border-color)', padding: '20px', textAlign: 'left', borderRadius: '8px', backgroundColor: 'white' }}>
-                      <h3 style={{ color: 'var(--primary-color)', margin: '0 0 10px 0' }}>{persona === 'worker' ? 'Automated Remittance' : 'Education Loan Offer'}</h3>
-                      <p style={{ fontSize: '14px', color: '#4b5563' }}>{persona === 'worker' ? 'Schedule a recurring transfer to your family in Patna.' : 'Pre-qualified for ₹5 Lakh Loan.'}</p>
+                    <h2 style={{ color: '#10b981' }}>{persona === 'worker' ? 'Account Reactivated' : 'Student Account Active'}</h2>
+                    <div style={{ marginTop: '40px', border: '1px solid var(--border-color)', padding: '20px', textAlign: 'left', borderRadius: '8px', backgroundColor: 'var(--card-bg)' }}>
+                      <h3 style={{ color: 'var(--primary-color)', margin: '0 0 10px 0' }}>City Flex Virtual Card</h3>
+                      <p style={{ fontSize: '14px', color: 'var(--text-color)' }}>Claim your free localized virtual card for zero-fee local payments and instant QR scanning.</p>
                       <button onClick={() => setStep(6)} style={{ width: '100%', padding: '12px', marginTop: '15px' }}>
-                        {persona === 'worker' ? 'Schedule Transfer' : 'Claim Offer'}
+                        Issue Virtual Card
                       </button>
                     </div>
                   </div>
@@ -170,44 +170,24 @@ export default function MobileDemo() {
             )}
 
             {step === 6 && (
-              <div style={{ padding: '25px', color: '#111827' }}>
+              <div style={{ padding: '25px', color: 'var(--text-color)' }}>
                 <h2 style={{ textAlign: 'center', borderBottom: '2px solid var(--border-color)', paddingBottom: '15px' }}>
-                  {persona === 'worker' ? 'Remittance Setup' : 'Loan Application'}
+                  City Flex Setup
                 </h2>
-                
-                {persona === 'worker' ? (
-                  <div style={{ marginTop: '25px' }}>
-                    <div style={{ marginBottom: '20px' }}>
-                      <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Recipient Name</label>
-                      <input type="text" value={remitName} onChange={e=>setRemitName(e.target.value)} />
+                <div style={{ marginTop: '25px', textAlign: 'center' }}>
+                  <div style={{ width: '280px', height: '160px', background: 'var(--nav-bg)', borderRadius: '15px', margin: '0 auto 30px auto', color: 'white', padding: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <strong style={{ fontSize: '18px' }}>City Flex Card</strong>
+                      <span>VISA</span>
                     </div>
-                    <div style={{ marginBottom: '20px' }}>
-                      <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Amount (₹)</label>
-                      <input type="number" value={remitAmount} onChange={e=>setRemitAmount(e.target.value)} />
+                    <div style={{ fontSize: '22px', letterSpacing: '2px', textAlign: 'left' }}>**** **** **** 1234</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', opacity: 0.8 }}>
+                      <span>{persona === 'worker' ? 'ACTIVATED' : 'STUDENT'}</span>
+                      <span>12/29</span>
                     </div>
-                    <div style={{ marginBottom: '20px' }}>
-                      <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Frequency</label>
-                      <select value={remitFreq} onChange={e=>setRemitFreq(e.target.value)}>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="custom">Custom</option>
-                      </select>
-                    </div>
-                    <button onClick={() => setStep(7)} style={{ width: '100%', padding: '12px', marginTop: '20px' }}>Confirm Transfer</button>
                   </div>
-                ) : (
-                  <div style={{ marginTop: '25px' }}>
-                    <div style={{ marginBottom: '20px' }}>
-                      <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Loan Amount (₹)</label>
-                      <input type="number" defaultValue="500000" />
-                    </div>
-                    <div style={{ marginBottom: '20px' }}>
-                      <label style={{ fontSize: '14px', fontWeight: 'bold' }}>Tenure</label>
-                      <select><option>5 Years</option><option>10 Years</option></select>
-                    </div>
-                    <button onClick={() => setStep(7)} style={{ width: '100%', padding: '12px', marginTop: '20px' }}>Accept Terms & Apply</button>
-                  </div>
-                )}
+                  <button onClick={() => setStep(7)} style={{ width: '100%', padding: '12px', marginTop: '20px' }}>Activate & Continue to App</button>
+                </div>
               </div>
             )}
 

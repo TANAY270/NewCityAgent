@@ -34,23 +34,26 @@ body {
 
 /* Modern Rounded Corners */
 input, select, button, .card, .popup-content {
-  border-radius: 8px !important;
+  border-radius: 12px !important;
 }
 
 button {
-  background-color: var(--primary-color);
+  background: linear-gradient(90deg, #2b0b5c, #7a0050, #b50d5e);
+  background-size: 200% auto;
   color: white;
   border: none;
   padding: 12px 24px;
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 button:hover {
-  background-color: var(--accent-color);
-  transform: translateY(-1px);
+  background-position: right center;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
 button:disabled {
@@ -110,10 +113,17 @@ body.dark .table-container th {
 }
 
 .card {
-  background-color: var(--card-bg);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid var(--border-color);
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   padding: 24px;
+}
+
+body.dark .card {
+  background-color: rgba(31, 41, 55, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .popup-overlay {
@@ -127,10 +137,27 @@ body.dark .table-container th {
 }
 
 .popup-content {
-  background: var(--card-bg);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   padding: 24px;
   max-width: 500px;
   width: 90%;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--border-color);
+  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+body.dark .popup-content {
+  background: rgba(31, 41, 55, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.live-dot {
+  animation: pulse 1.5s infinite;
 }

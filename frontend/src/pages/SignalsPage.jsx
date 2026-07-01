@@ -41,8 +41,12 @@ export default function SignalsPage() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 5000); 
-    return () => clearInterval(interval);
+    const evtSource = new EventSource('/api/signals/stream');
+    evtSource.onmessage = (event) => {
+      const newSignal = JSON.parse(event.data);
+      setSignals((prev) => [newSignal, ...prev].slice(0, 20));
+    };
+    return () => evtSource.close();
   }, []);
 
   const sendSignal = async (type) => {
@@ -65,10 +69,10 @@ export default function SignalsPage() {
     <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
       
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '30px' }}>
-        <h1 style={{ margin: 0, fontSize: '24px' }}>Signal Injection Tool</h1>
+        <h1 style={{ margin: 0, fontSize: '24px' }}>Reactivation Signal Injector</h1>
         <HelpPopup 
-          title="Signal Injector" 
-          content="This tool directly calls the /api/signals endpoint, bypassing the guided demo UI. It lets you test arbitrary phone + city combinations to explore how the Location Processor identifies city changes."
+          title="Reactivation Signals" 
+          content="These signals (UPI, ATM, SIM) are used to intelligently identify when a dormant customer has relocated, triggering the conversational onboarding flow."
         />
       </div>
 
@@ -91,9 +95,9 @@ export default function SignalsPage() {
 
             <label style={{ fontSize: '14px', fontWeight: 'bold', display: 'block', marginBottom: '10px' }}>Signal Source (Click to Inject)</label>
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => sendSignal('UPI')} style={{ flex: 1, backgroundColor: 'transparent', color: 'var(--text-color)', border: '1px solid var(--primary-color)' }}>UPI</button>
-              <button onClick={() => sendSignal('ATM')} style={{ flex: 1, backgroundColor: 'transparent', color: 'var(--text-color)', border: '1px solid var(--primary-color)' }}>ATM</button>
-              <button onClick={() => sendSignal('SIM')} style={{ flex: 1, backgroundColor: 'transparent', color: 'var(--text-color)', border: '1px solid var(--primary-color)' }}>SIM</button>
+              <button onClick={() => sendSignal('UPI')} style={{ flex: 1, background: 'transparent', color: 'var(--text-color)', border: '1px solid var(--primary-color)' }}>UPI</button>
+              <button onClick={() => sendSignal('ATM')} style={{ flex: 1, background: 'transparent', color: 'var(--text-color)', border: '1px solid var(--primary-color)' }}>ATM</button>
+              <button onClick={() => sendSignal('SIM')} style={{ flex: 1, background: 'transparent', color: 'var(--text-color)', border: '1px solid var(--primary-color)' }}>SIM</button>
             </div>
 
             {status && (
@@ -107,7 +111,13 @@ export default function SignalsPage() {
         {/* Right Side: Table */}
         <div style={{ flex: 1, minWidth: '400px' }}>
           <div className="card" style={{ height: '100%' }}>
-            <h3 style={{ marginTop: 0, marginBottom: '20px' }}>Response & Recent Signals</h3>
+            <h3 style={{ marginTop: 0, marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>Response & Recent Signals</span>
+              <span style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981', backgroundColor: '#ecfdf5', padding: '4px 10px', borderRadius: '12px', border: '1px solid #a7f3d0' }}>
+                <span className="live-dot" style={{ width: '8px', height: '8px', backgroundColor: '#10b981', borderRadius: '50%' }}></span>
+                Live Stream Active
+              </span>
+            </h3>
             <div className="table-container" style={{ maxHeight: '350px', overflowY: 'auto' }}>
               <table>
                 <thead>

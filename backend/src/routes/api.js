@@ -31,6 +31,21 @@ router.get('/users', async (req, res, next) => {
 });
 
 // Signals
+let clients = [];
+
+router.get('/signals/stream', (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+  
+  clients.push(res);
+  
+  req.on('close', () => {
+    clients = clients.filter(client => client !== res);
+  });
+});
+
 router.get('/signals', async (req, res, next) => {
   try {
     const result = await db.query('SELECT * FROM signals ORDER BY timestamp DESC LIMIT 20');
@@ -47,7 +62,9 @@ router.post('/signals', async (req, res, next) => {
       'INSERT INTO signals (signal_type, location) VALUES ($1, $2) RETURNING *',
       [signal_type, location]
     );
-    res.json(result.rows[0]);
+    const newSignal = result.rows[0];
+    clients.forEach(client => client.write(`data: ${JSON.stringify(newSignal)}\n\n`));
+    res.json(newSignal);
   } catch (error) {
     next(error);
   }
