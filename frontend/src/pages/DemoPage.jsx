@@ -1,5 +1,5 @@
-import React, { useState, Component } from 'react';
-import { triggerScenario, reactivateAccount, resetState } from '../services/api';
+import React, { useState, useEffect, Component } from 'react';
+import { triggerScenario, reactivateAccount, resetState, openAccount } from '../services/api';
 import { Briefcase, GraduationCap, CheckCircle, ArrowRight, AlertTriangle, RotateCcw } from 'lucide-react';
 
 // Error Boundary to catch render crashes and show a useful message instead of white screen
@@ -30,7 +30,7 @@ class ErrorBoundary extends Component {
   }
 }
 
-function DemoPageInner() {
+function DemoPageInner({ lastSignal }) {
   const [step, setStep] = useState(1);
   const [scenario, setScenario] = useState(null);
   const [result, setResult] = useState(null);
@@ -38,6 +38,23 @@ function DemoPageInner() {
   const [otp, setOtp] = useState('');
   const [otpError, setOtpError] = useState(null);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (lastSignal) {
+      const scen = lastSignal.phone === '9876543211' ? 'student' : 'migrant_worker';
+      const user = lastSignal.phone === '9876543211' ? 'Priya Sharma' : 'Ramesh Kumar';
+      setScenario(scen);
+      setResult({
+        scenario: scen,
+        user,
+        phone: lastSignal.phone,
+        source: lastSignal.source,
+        destinationCity: lastSignal.newCity,
+        signalResult: lastSignal
+      });
+      setStep(2);
+    }
+  }, [lastSignal]);
 
   const handleSelectScenario = async (scen) => {
     setError(null);
@@ -111,6 +128,53 @@ function DemoPageInner() {
     setScenario(null);
     setResult(null);
     setOtp('');
+  };
+
+  const handleOpenAccount = async () => {
+    if (!result) return;
+
+    // ── OTP validation ──────────────────────────────────────────────────────
+    setOtpError(null);
+    if (!otp.trim()) {
+      setOtpError('Please enter the Aadhaar OTP to proceed.');
+      return;
+    }
+    if (!/^\d{6}$/.test(otp.trim())) {
+      setOtpError('OTP must be exactly 6 digits.');
+      return;
+    }
+    if (otp.trim() !== '123456') {
+      setOtpError('Incorrect OTP. Use 123456 for this demo.');
+      return;
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
+    setError(null);
+    setLoading(true);
+    try {
+      const phone = result.phone || '9876543211';
+      const name = result.user || 'Priya Sharma';
+      const res = await openAccount({
+        phone,
+        name,
+        aadhaar: '234567890123',
+        preferredLanguage: 'English',
+        initialDeposit: 1000,
+        currentCity: newCity,
+        segment: 'student'
+      });
+      console.log('[DemoPage] openAccount response:', JSON.stringify(res));
+      if (res && res.error) {
+        setError(res.error);
+        return;
+      }
+      setStep(4);
+    } catch (e) {
+      console.error('[DemoPage] openAccount error:', e);
+      setError('Account opening error: ' + e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const signalResult = result?.signalResult || {};
@@ -327,13 +391,38 @@ function DemoPageInner() {
               <>
                 <h3 style={{ marginBottom: '20px', color: 'var(--text-primary)' }}>Open Insta Savings Account</h3>
                 <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>
-                  Customer clicked the notification link to open a new digital account in {newCity}.
+                  Customer clicked the notification link. Verify Aadhaar OTP to open a new digital account in {newCity}.
                 </p>
+                <input
+                  type="text"
+                  placeholder="Enter Aadhaar OTP (use 123456)"
+                  value={otp}
+                  onChange={e => { setOtp(e.target.value); setOtpError(null); }}
+                  maxLength={6}
+                  style={{
+                    width: '100%', padding: '12px',
+                    border: otpError ? '1px solid #f87171' : '1px solid var(--card-border)',
+                    borderRadius: '4px', marginBottom: '8px',
+                    background: 'var(--bg-primary)', color: 'var(--text-primary)'
+                  }}
+                />
+                {/* Inline OTP error */}
+                {otpError && (
+                  <p style={{ color: '#b91c1c', fontSize: '0.85rem', marginBottom: '12px', textAlign: 'left' }}>
+                    ⚠ {otpError}
+                  </p>
+                )}
                 <button
-                  onClick={() => setStep(4)}
-                  style={{ width: '100%', background: 'var(--gradient-btn)', color: 'white', padding: '12px', borderRadius: '4px', fontWeight: 'bold' }}
+                  onClick={handleOpenAccount}
+                  disabled={loading || !otp.trim()}
+                  style={{
+                    width: '100%', background: 'var(--gradient-btn)', color: 'white',
+                    padding: '12px', borderRadius: '4px', fontWeight: 'bold',
+                    opacity: (loading || !otp.trim()) ? 0.6 : 1,
+                    cursor: (loading || !otp.trim()) ? 'not-allowed' : 'pointer'
+                  }}
                 >
-                  Complete Video KYC & Open Account
+                  {loading ? 'Verifying OTP...' : 'Verify OTP & Open Account'}
                 </button>
               </>
             )}
@@ -364,10 +453,10 @@ function DemoPageInner() {
   );
 }
 
-export default function DemoPage() {
+export default function DemoPage({ lastSignal }) {
   return (
     <ErrorBoundary>
-      <DemoPageInner />
+      <DemoPageInner lastSignal={lastSignal} />
     </ErrorBoundary>
   );
 }

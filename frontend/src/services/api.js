@@ -34,3 +34,12 @@ export const setupRemittance = async (data) => {
   });
   return res.json();
 };
+
+export const openAccount = async (data) => {
+  const res = await fetch('/api/accounts/open', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  return res.json();
+};

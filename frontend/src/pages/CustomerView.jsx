@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getState, reactivateAccount, setupRemittance } from '../services/api';
+import { getState, reactivateAccount, setupRemittance, openAccount } from '../services/api';
 import { Smartphone, CheckCircle, ShieldAlert } from 'lucide-react';
 
 
@@ -66,6 +66,38 @@ export default function CustomerView() {
       fetchState();
     } catch (e) {
       showError('Error reactivating account. Please try again.');
+    }
+  };
+
+  const handleOpenAccountFromSimulator = async () => {
+    if (!user) return;
+    if (!otp.trim()) {
+      showError('Please enter the Aadhaar OTP to proceed.');
+      return;
+    }
+    if (otp.trim() !== '123456') {
+      showError('Incorrect OTP. Use 123456 for this demo.');
+      return;
+    }
+    try {
+      const res = await openAccount({
+        phone: user.phone,
+        name: user.name,
+        aadhaar: '234567890123',
+        preferredLanguage: user.preferredLanguage || 'English',
+        initialDeposit: 1000,
+        currentCity: user.currentCity || 'Pune',
+        segment: user.segment
+      });
+      if (res && res.error) {
+        showError(res.error);
+        return;
+      }
+      showSuccess('Insta Savings Account Opened Successfully!');
+      setOtp('');
+      fetchState();
+    } catch (e) {
+      showError('Error opening account. Please try again.');
     }
   };
 
@@ -224,8 +256,8 @@ export default function CustomerView() {
                 </div>
               )}
 
-              {/* Remittance Setup Flow (Only if Active Worker) */}
-              {accountStatus === 'active' && user.segment === 'worker' && (
+              {/* New Account Opening Flow */}
+              {accountStatus === 'none' && (
                 <div style={{
                   marginTop: '20px',
                   padding: '15px',
@@ -233,44 +265,249 @@ export default function CustomerView() {
                   borderRadius: '8px',
                   background: 'var(--bg-secondary)'
                 }}>
-                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '15px', color: 'var(--secondary-magenta)' }}>
-                    <CheckCircle size={20} />
-                    <strong>Send Money Home</strong>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '15px', color: 'var(--primary-purple)' }}>
+                    <ShieldAlert size={20} />
+                    <strong>Aadhaar e-KYC Verification</strong>
                   </div>
-                  <form onSubmit={handleRemittance}>
-                    <input
-                      type="text" placeholder="Beneficiary Name" required
-                      value={remittanceData.beneficiaryName}
-                      onChange={e => setRemittanceData({ ...remittanceData, beneficiaryName: e.target.value })}
-                      style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid var(--card-border)', borderRadius: '4px', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
-                    />
-                    <input
-                      type="text" placeholder="Account Number" required
-                      value={remittanceData.beneficiaryAccount}
-                      onChange={e => setRemittanceData({ ...remittanceData, beneficiaryAccount: e.target.value })}
-                      style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid var(--card-border)', borderRadius: '4px', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
-                    />
-                    <input
-                      type="number" placeholder="Amount (₹)" required
-                      value={remittanceData.amount}
-                      onChange={e => setRemittanceData({ ...remittanceData, amount: e.target.value })}
-                      style={{ width: '100%', padding: '10px', marginBottom: '15px', border: '1px solid var(--card-border)', borderRadius: '4px', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
-                    />
-                    <button
-                      type="submit"
-                      style={{
-                        width: '100%',
-                        background: 'var(--secondary-magenta)',
-                        color: 'white',
+                  <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '10px' }}>
+                    Verify Aadhaar OTP to open your new digital Insta Savings Account.
+                  </p>
+                  <input
+                    type="text"
+                    placeholder="Enter Aadhaar OTP (use 123456)"
+                    value={otp}
+                    onChange={e => setOtp(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '1px solid var(--card-border)',
+                      borderRadius: '4px',
+                      marginBottom: '10px',
+                      background: 'var(--bg-primary)',
+                      color: 'var(--text-primary)'
+                    }}
+                  />
+                  <button
+                    onClick={handleOpenAccountFromSimulator}
+                    style={{
+                      width: '100%',
+                      background: 'var(--primary-purple)',
+                      color: 'white',
+                      padding: '10px',
+                      border: 'none',
+                      borderRadius: '4px',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    Verify & Open Account
+                  </button>
+                </div>
+              )}
+
+              {/* Active Account Dashboard & Services */}
+              {accountStatus === 'active' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px' }}>
+                  {/* Premium Balance Card */}
+                  <div style={{
+                    background: 'linear-gradient(135deg, #3e1b70 0%, #b0185e 100%)',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    color: 'white',
+                    boxShadow: '0 4px 15px rgba(62, 27, 112, 0.3)',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}>
+                    {/* SVG overlay to make it look like a credit card chip/design */}
+                    <div style={{ opacity: 0.1, position: 'absolute', right: '-20px', bottom: '-20px' }}>
+                      <svg width="120" height="120" viewBox="0 0 100 100" fill="none">
+                        <circle cx="50" cy="50" r="40" stroke="white" strokeWidth="10" />
+                      </svg>
+                    </div>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', opacity: 0.8, letterSpacing: '1px', color: 'white' }}>
+                        SBI Digital Savings
+                      </span>
+                      <span style={{
+                        fontSize: '0.65rem',
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        padding: '3px 8px',
+                        borderRadius: '10px',
+                        fontWeight: 'bold',
+                        color: 'white'
+                      }}>
+                        {user.segment === 'worker' ? 'Active (Reactivated)' : 'Active (New)'}
+                      </span>
+                    </div>
+
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1.4rem', fontWeight: 'bold', color: 'white' }}>
+                      ₹{parseFloat(user.balance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    </h4>
+                    <span style={{ fontSize: '0.7rem', opacity: 0.7, color: 'white' }}>Available Balance</span>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '16px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: 'white' }}>{user.name}</span>
+                        <span style={{ fontSize: '0.65rem', opacity: 0.7, color: 'white' }}>
+                          A/C: SBI-XXXX-{user.phone.slice(-4)}
+                        </span>
+                      </div>
+                      <span style={{ fontSize: '0.9rem', fontWeight: 'bold', fontStyle: 'italic', color: 'white' }}>yono</span>
+                    </div>
+                  </div>
+
+                  {/* Incentives / Dormant Account Benefits Section */}
+                  <div style={{
+                    background: 'var(--bg-secondary)',
+                    borderRadius: '8px',
+                    border: '1px solid var(--card-border)',
+                    padding: '12px 14px'
+                  }}>
+                    <strong style={{ fontSize: '0.8rem', color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>
+                      🎁 Special Account Benefits & Incentives
+                    </strong>
+                    <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <li style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', borderBottom: '1px solid var(--card-border)', paddingBottom: '4px' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>🛡️ Accidental Insurance Cover</span>
+                        <strong style={{ color: '#10b981' }}>₹1,00,000 Free</strong>
+                      </li>
+                      <li style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', borderBottom: '1px solid var(--card-border)', paddingBottom: '4px' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>📊 Balance Requirement</span>
+                        <strong style={{ color: '#10b981' }}>Waived (₹0 Min)</strong>
+                      </li>
+                      <li style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', borderBottom: '1px solid var(--card-border)', paddingBottom: '4px' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>⚡ Remittance Transfer Fee</span>
+                        <strong style={{ color: '#10b981' }}>Zero Fee</strong>
+                      </li>
+                      <li style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem' }}>
+                        <span style={{ color: 'var(--text-secondary)' }}>💰 Welcome Reward Offer</span>
+                        <strong style={{ color: 'var(--secondary-magenta)' }}>₹50 Cashback</strong>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Worker Services (Remittance Form) */}
+                  {user.segment === 'worker' && (
+                    <div style={{
+                      background: 'var(--bg-secondary)',
+                      padding: '15px',
+                      border: '1px solid var(--card-border)',
+                      borderRadius: '8px'
+                    }}>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '12px', color: 'var(--secondary-magenta)' }}>
+                        <CheckCircle size={16} />
+                        <strong style={{ fontSize: '0.9rem' }}>Send Money Home</strong>
+                      </div>
+                      <form onSubmit={handleRemittance} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <input
+                          type="text" placeholder="Beneficiary Name" required
+                          value={remittanceData.beneficiaryName}
+                          onChange={e => setRemittanceData({ ...remittanceData, beneficiaryName: e.target.value })}
+                          style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--card-border)', borderRadius: '4px', background: 'var(--bg-primary)', color: 'var(--text-primary)', fontSize: '0.8rem' }}
+                        />
+                        <input
+                          type="text" placeholder="Account Number" required
+                          value={remittanceData.beneficiaryAccount}
+                          onChange={e => setRemittanceData({ ...remittanceData, beneficiaryAccount: e.target.value })}
+                          style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--card-border)', borderRadius: '4px', background: 'var(--bg-primary)', color: 'var(--text-primary)', fontSize: '0.8rem' }}
+                        />
+                        <input
+                          type="number" placeholder="Amount (₹)" required
+                          value={remittanceData.amount}
+                          onChange={e => setRemittanceData({ ...remittanceData, amount: e.target.value })}
+                          style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--card-border)', borderRadius: '4px', background: 'var(--bg-primary)', color: 'var(--text-primary)', fontSize: '0.8rem' }}
+                        />
+                        <button
+                          type="submit"
+                          style={{
+                            width: '100%',
+                            background: 'var(--secondary-magenta)',
+                            color: 'white',
+                            padding: '10px',
+                            border: 'none',
+                            borderRadius: '4px',
+                            fontWeight: 'bold',
+                            fontSize: '0.85rem',
+                            cursor: 'pointer',
+                            marginTop: '4px'
+                          }}
+                        >
+                          Setup Transfer
+                        </button>
+                      </form>
+                    </div>
+                  )}
+
+                  {/* Student Services (Loan limits, Voucher) */}
+                  {user.segment === 'student' && (
+                    <div style={{
+                      background: 'var(--bg-secondary)',
+                      padding: '15px',
+                      border: '1px solid var(--card-border)',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '10px'
+                    }}>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', color: 'var(--primary-purple)' }}>
+                        <CheckCircle size={16} />
+                        <strong style={{ fontSize: '0.9rem' }}>Student Benefits Hub</strong>
+                      </div>
+                      
+                      <div style={{
+                        background: 'var(--bg-primary)',
                         padding: '10px',
-                        border: 'none',
                         borderRadius: '4px',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      Setup Transfer
-                    </button>
-                  </form>
+                        border: '1px solid var(--card-border)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '4px'
+                      }}>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>Pre-Approved Education Loan</span>
+                        <strong style={{ fontSize: '1rem', color: 'var(--primary-purple)' }}>₹2,00,000 Limit</strong>
+                        <button style={{
+                          background: 'var(--primary-purple)',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '6px',
+                          fontSize: '0.75rem',
+                          fontWeight: 'bold',
+                          marginTop: '4px',
+                          cursor: 'pointer'
+                        }}>
+                          Check Pre-Qualification
+                        </button>
+                      </div>
+
+                      <div style={{
+                        background: 'var(--bg-primary)',
+                        padding: '10px',
+                        borderRadius: '4px',
+                        border: '1px solid var(--card-border)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>e-Rupee Books Voucher</span>
+                          <strong style={{ fontSize: '0.8rem', color: '#10b981' }}>₹1,500 Available</strong>
+                        </div>
+                        <button style={{
+                          background: 'transparent',
+                          border: '1px solid #10b981',
+                          color: '#10b981',
+                          borderRadius: '4px',
+                          padding: '6px 10px',
+                          fontSize: '0.7rem',
+                          fontWeight: 'bold',
+                          cursor: 'pointer'
+                        }}>
+                          Redeem
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </>
